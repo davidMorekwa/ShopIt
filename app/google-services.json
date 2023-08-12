@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "776471407800",
+    "firebase_url": "https://myapp-84a7c-default-rtdb.firebaseio.com",
+    "project_id": "myapp-84a7c",
+    "storage_bucket": "myapp-84a7c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776471407800:android:0db37132c258c8cdd9d84d",
+        "android_client_info": {
+          "package_name": "com.example.shopit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776471407800-nep8836ltmhlrheebksuoiclg3o6euqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shopit",
+            "certificate_hash": "808ab1452e001adebbcd667f6727faefd40240e7"
+          }
+        },
+        {
+          "client_id": "776471407800-e5mtmjhd0o3d910ejgm6q6mqehqpnkdt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa9T4SRJxYLo5jyA6R9s2fA_FluJP0z9M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776471407800-e5mtmjhd0o3d910ejgm6q6mqehqpnkdt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
