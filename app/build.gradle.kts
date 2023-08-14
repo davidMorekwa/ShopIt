@@ -62,6 +62,8 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("com.google.firebase:firebase-database-ktx:20.2.2")
     implementation("com.google.firebase:firebase-database:20.2.2")
+    implementation("androidx.test:core-ktx:1.5.0")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -70,4 +72,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    testImplementation ("org.mockito:mockito-core:3.+")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
