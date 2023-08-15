@@ -60,6 +60,6 @@ fun ShopItApp() {
 @Composable
 fun GreetingPreview() {
     ShopItTheme {
-
+        ShopItApp()
     }
 }
