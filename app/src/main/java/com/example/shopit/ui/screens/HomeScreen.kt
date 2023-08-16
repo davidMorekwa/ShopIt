@@ -2,8 +2,6 @@ package com.example.shopit.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +18,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
@@ -37,28 +33,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,25 +60,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.shopit.R
+import com.example.shopit.Screens
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.theme.ShopItTheme
+import com.example.shopit.ui.uiStates.HomeUiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -103,7 +94,7 @@ fun HomeScreen(
             CenterAlignedTopAppBar(
                 title = {
                         Text(
-                            text = stringResource(id = R.string.app_name),
+                            text = "Home",
                             fontSize = 17.sp,
                             modifier = Modifier
                                 .padding(top = 8.dp)
@@ -137,85 +128,7 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                windowInsets = WindowInsets.navigationBars,
-                contentPadding = PaddingValues(horizontal = 2.dp),
-                tonalElevation = 2.dp,
-                modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ){
-                    IconButton(
-                        onClick = { /*TODO*/ }
-                    ) {
-                    Column(
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .width(45.dp)
-                    ) {
-
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "Home Icon",
-                                modifier = Modifier
-                                    .size(27.dp)
-                            )
-                            Text(
-                                text = "Home",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                    Column(
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                    ) {
-
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Home Icon",
-                                modifier = Modifier
-                                    .size(27.dp)
-                            )
-                            Text(
-                                text = "Search",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                    Column(
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                    ) {
-
-                            Icon(
-                                imageVector = Icons.Default.ShoppingCart,
-                                contentDescription = "Home Icon",
-                                modifier = Modifier
-                                    .size(27.dp)
-                            )
-                            Text(
-                                text = "Cart",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-
-                    }
-                }
-            }
+            BottomAppBar()
         },
     ) {
         val selectedItem = remember { mutableStateOf(tempMenu[0].id) }
@@ -267,7 +180,12 @@ fun HomeScreen(
                         is HomeUiState.Loading -> LoadingScreen()
                         is HomeUiState.Success -> {
                             if((uiState.value as HomeUiState.Success).products.isNotEmpty()){
-                                SuccessScreen(products = (uiState.value as HomeUiState.Success).products)
+                                SuccessScreen(
+                                    products = (uiState.value as HomeUiState.Success).products,
+                                    viewModel = viewModel,
+                                    navController = navController,
+                                    scope = scope
+                                )
                             } else {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -291,6 +209,89 @@ fun HomeScreen(
         )
 
 
+    }
+}
+
+@Composable
+fun BottomAppBar() {
+    BottomAppBar(
+        windowInsets = WindowInsets.navigationBars,
+        contentPadding = PaddingValues(horizontal = 2.dp),
+        tonalElevation = 2.dp,
+        modifier = Modifier
+            .height(50.dp)
+            .fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .fillMaxWidth()
+        ){
+            IconButton(
+                onClick = { /*TODO*/ }
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .width(45.dp)
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Home Icon",
+                        modifier = Modifier
+                            .size(27.dp)
+                    )
+                    Text(
+                        text = "Home",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+            }
+            IconButton(onClick = { /*TODO*/ }) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Home Icon",
+                        modifier = Modifier
+                            .size(27.dp)
+                    )
+                    Text(
+                        text = "Search",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+            }
+            IconButton(onClick = { /*TODO*/ }) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = "Home Icon",
+                        modifier = Modifier
+                            .size(27.dp)
+                    )
+                    Text(
+                        text = "Cart",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+            }
+        }
     }
 }
 
@@ -330,6 +331,9 @@ fun LoadingScreen(
 @Composable
 fun SuccessScreen(
     products: List<Product>,
+    viewModel: HomeScreenViewModel,
+    navController: NavController,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -340,7 +344,15 @@ fun SuccessScreen(
     ){
         itemsIndexed(products){
             index,item: Product ->
-                ProductItem(product = item)
+                ProductItem(
+                    product = item,
+                    onProductClick = {
+                        scope.launch {
+                            viewModel.updateProductUiState(item)
+                            navController.navigate(Screens.PRODUCT_SCREEN.name)
+                        }
+                    }
+                )
         }
     }
 
@@ -350,6 +362,7 @@ fun SuccessScreen(
 @Composable
 fun ProductItem(
     product: Product,
+    onProductClick:(product: Product)-> Unit
 ) {
     var elevation by remember {
         mutableStateOf(0.dp)
@@ -366,6 +379,7 @@ fun ProductItem(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .shadow(4.dp, shape = RoundedCornerShape(15.dp))
+            .clickable { onProductClick(product) }
 
     ) {
         Column(
@@ -373,13 +387,13 @@ fun ProductItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(horizontal = 8.dp)
         ) {
             AsyncImage(
                 model = product.main_image,
                 contentDescription = "Product image",
                 modifier = Modifier
-                    .size(165.dp)
+                    .size(170.dp)
                     .clip(RoundedCornerShape(15.dp))
             )
             Text(
@@ -416,7 +430,7 @@ fun ProductItem(
 @Composable
 fun HomeScreenPreview() {
     ShopItTheme {
-        SuccessScreen(products = temp)
+//        SuccessScreen(products = temp)
     }
 }
 val temp:List<Product> = listOf(
