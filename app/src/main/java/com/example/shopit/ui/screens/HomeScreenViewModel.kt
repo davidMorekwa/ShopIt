@@ -1,36 +1,53 @@
 package com.example.shopit.ui.screens
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.DatabaseRepository
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
+import com.example.shopit.ui.uiStates.HomeUiState
+import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-sealed interface HomeUiState {
-    object Error : HomeUiState
-    object Loading : HomeUiState
-    data class Success(val products: List<Product>) : HomeUiState
-}
 
 class HomeScreenViewModel(private val repository: DatabaseRepository):ViewModel() {
+    private val productScreenViewModel: ProductScreenViewModel = ProductScreenViewModel()
     private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
-//    private var _homeUiState:HomeUiState by mutableStateOf(HomeUiState.Loading)
         private set
     var homeUiState = _homeUiState.asStateFlow()
+    private var _productUiState = MutableStateFlow(
+        ProductViewUiState()
+    )
+        private set
+    val productUiState = _productUiState.asStateFlow()
+
+    fun updateProductUiState(product: Product) {
+        var images = product.images?.split("|") ?: emptyList()
+        _productUiState.update { state ->
+            state.copy(
+                _id = product._id,
+                title = product.title,
+                description = product.description,
+                images = images,
+                price = product.price,
+                specifications = product.speciications
+            )
+        }
+
+    }
 
     init {
         println("Getting products")
         getInitialProducts()
     }
+
+
 
     fun getInitialProducts() {
         viewModelScope.launch {
@@ -39,9 +56,6 @@ class HomeScreenViewModel(private val repository: DatabaseRepository):ViewModel(
             _homeUiState.value = try{
                 var products = repository.getInitalProducts()
                 println("PRODUCTS ${products.size}")
-                for (p in products){
-                    println(p.title)
-                }
                  HomeUiState.Success(products)
             } catch (e: IOException){
                 Log.e("ERROR", e.message.toString())

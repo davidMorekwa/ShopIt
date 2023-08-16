@@ -30,25 +30,32 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Databa
                     if(snapshot.exists()) {
                         for (productSnapshot in snapshot.children) { // Assuming 20 is the maximum index
                             var product = Product(
-                                _id = productSnapshot.child("_id").getValue(String::class.java),
-                                title = productSnapshot.child("title").getValue(String::class.java),
+                                _id = productSnapshot.child("_id")
+                                    .getValue(String::class.java),
+                                title = productSnapshot.child("title")
+                                    .getValue(String::class.java),
                                 description = productSnapshot.child("description")
                                     .getValue(String::class.java),
                                 availability = productSnapshot.child("availability")
                                     .getValue(String::class.java),
-                                brand = productSnapshot.child("brand").getValue(String::class.java),
+                                brand = productSnapshot.child("brand")
+                                    .getValue(String::class.java),
                                 currency = productSnapshot.child("currency")
                                     .getValue(String::class.java),
                                 highlights = productSnapshot.child("highlights")
                                     .getValue(String::class.java),
                                 main_image = productSnapshot.child("main_image")
                                     .getValue(String::class.java),
-                                price = productSnapshot.child("price").getValue(Double::class.java),
+                                images = productSnapshot.child("images")
+                                    .getValue(String::class.java),
+                                price = productSnapshot.child("price")
+                                    .getValue(Double::class.java),
                                 primary_category = productSnapshot.child("primary_category")
                                     .getValue(String::class.java),
                                 scraped_at = productSnapshot.child("scraped_at")
                                     .getValue(String::class.java),
-                                sku = productSnapshot.child("sku").getValue(Int::class.java),
+                                sku = productSnapshot.child("sku")
+                                    .getValue(Int::class.java),
                                 speciications = productSnapshot.child("specifications")
                                     .getValue(String::class.java),
                                 sub_category_1 = productSnapshot.child("sub_category_1")
@@ -59,6 +66,7 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Databa
                                     .getValue(String::class.java)
                             )
                             productList.add(product)
+                            println("IMAGES: ${product.images}")
                         }
                     }
                     continuation.resume(productList)

@@ -8,7 +8,7 @@ data class Product(
     var brand: String? = "",
     var currency:String? = "",
     var highlights: String? = "",
-//    var images: List<String>? = emptyList(),
+    var images: String? = "",
     var main_image: String? = "",
     var price: Double? = 0.0,
     var primary_category: String? = "",
