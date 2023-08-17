@@ -1,6 +1,7 @@
 package com.example.shopit.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,8 +34,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,11 +43,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.shopit.Screens
 import com.example.shopit.data.model.Product
 import kotlinx.coroutines.launch
 
@@ -56,11 +59,12 @@ import kotlinx.coroutines.launch
 fun SearchScreen(
     viewModel: SearchScreenViewModel,
     navController: NavController,
+    onProductSearchResultClick: (product: Product)->Unit,
     isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
-    var searchValue by remember {
+    var searchValue by rememberSaveable {
         mutableStateOf("")
     }
     val scope = rememberCoroutineScope()
@@ -90,15 +94,31 @@ fun SearchScreen(
                 )
             },
         ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .padding(top = 40.dp, start = 8.dp, end = 8.dp, bottom = 50.dp)
-                    .fillMaxHeight()
-            ){
-                items(uiState.value){ item: Product ->
-                    SearchProductItem(product = item)
+            if(uiState.value.isNotEmpty()) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .padding(top = 40.dp, start = 8.dp, end = 8.dp, bottom = 50.dp)
+                        .fillMaxHeight()
+                ) {
+                    items(uiState.value) { item: Product ->
+                        SearchProductItem(
+                            product = item,
+                            onProductSearchResultClick = {
+                                onProductSearchResultClick(item)
+                                navController.navigate(Screens.PRODUCT_SCREEN.name)
+                            }
+                        )
+                    }
                 }
+            } else {
+                Text(
+                    text = "No products found :(",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = 70.dp)
+                        .fillMaxWidth()
+                )
             }
         }
     } else{
@@ -170,7 +190,8 @@ fun SearchScreen(
 
 @Composable
 fun SearchProductItem(
-    product: Product
+    product: Product,
+    onProductSearchResultClick: (product: Product)->Unit
 ) {
     Surface(
         tonalElevation = 1.dp,
@@ -178,6 +199,7 @@ fun SearchProductItem(
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onProductSearchResultClick(product) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

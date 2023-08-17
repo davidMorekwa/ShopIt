@@ -161,7 +161,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 35.dp)
+                        .padding(top = 35.dp, bottom = 50.dp)
                 ){
                     when(uiState.value){
                         is HomeUiState.Error -> ErrorScreen()
@@ -247,7 +247,7 @@ fun SuccessScreen(
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ){
         itemsIndexed(products){
             index,item: Product ->
@@ -293,14 +293,14 @@ fun ProductItem(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .fillMaxSize()
+                .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 5.dp)
         ) {
             AsyncImage(
                 model = product.main_image,
                 contentDescription = "Product image",
                 modifier = Modifier
-                    .size(170.dp)
+                    .fillMaxWidth()
                     .clip(RoundedCornerShape(15.dp))
             )
             Text(

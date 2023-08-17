@@ -22,7 +22,7 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Databa
 
         return suspendCoroutine { continuation: Continuation<List<Product>> ->
             var productList:MutableList<Product> = mutableListOf()
-            productsRef.limitToFirst(20).addListenerForSingleValueEvent(object : ValueEventListener{
+            productsRef.addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.exists()) {
                         for (productSnapshot in snapshot.children) { // Assuming 20 is the maximum index
