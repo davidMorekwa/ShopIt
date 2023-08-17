@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.EaseInOutQuart
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeOut
@@ -112,7 +113,7 @@ fun ShopItApp() {
                     fadeOut()
                 },
                 enterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
                 },
                 popEnterTransition = {
                     slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
@@ -127,10 +128,11 @@ fun ShopItApp() {
             composable(
                 route = Screens.PRODUCT_SCREEN.name,
                 exitTransition = {
-                    fadeOut()
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
                 },
                 enterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+//                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
                 },
                 popEnterTransition = {
                     slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
@@ -144,10 +146,10 @@ fun ShopItApp() {
             composable(
                 route = Screens.SEARCH_SCREEN.name,
                 exitTransition = {
-                    fadeOut()
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
                 },
                 enterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
                 },
                 popEnterTransition = {
                     slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
@@ -156,7 +158,10 @@ fun ShopItApp() {
                 SearchScreen(
                     viewModel = viewModel(factory = viewModelProvider.factory),
                     navController = navController,
-                    isActive = isActive
+                    isActive = isActive,
+                    onProductSearchResultClick = {
+                        homeScreenViewModel.updateProductUiState(it)
+                    }
                 )
             }
 
