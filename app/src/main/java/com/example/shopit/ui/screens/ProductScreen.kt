@@ -64,6 +64,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.example.shopit.R
+import com.example.shopit.Screens
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.async
@@ -94,9 +95,6 @@ fun ProductScreen(
                     .height(40.dp)
             )
         },
-        bottomBar = {
-            BottomAppBar()
-        }
     ) {
         ProductView(
             uiState = uiState,

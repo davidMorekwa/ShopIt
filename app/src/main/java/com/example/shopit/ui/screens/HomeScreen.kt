@@ -7,14 +7,11 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,21 +21,18 @@ import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -71,10 +65,7 @@ import com.example.shopit.data.model.Product
 import com.example.shopit.ui.theme.ShopItTheme
 import com.example.shopit.ui.uiStates.HomeUiState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,23 +73,23 @@ import kotlinx.coroutines.runBlocking
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
     navController: NavController,
+    isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var uiState = viewModel.homeUiState.collectAsState()
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                        Text(
-                            text = "Home",
-                            fontSize = 17.sp,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                        )
+                    Text(
+                        text = "Home",
+                        fontSize = 17.sp,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                    )
 
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(),
@@ -126,9 +117,6 @@ fun HomeScreen(
                 modifier = Modifier
                     .height(40.dp)
             )
-        },
-        bottomBar = {
-            BottomAppBar()
         },
     ) {
         val selectedItem = remember { mutableStateOf(tempMenu[0].id) }
@@ -212,88 +200,7 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun BottomAppBar() {
-    BottomAppBar(
-        windowInsets = WindowInsets.navigationBars,
-        contentPadding = PaddingValues(horizontal = 2.dp),
-        tonalElevation = 2.dp,
-        modifier = Modifier
-            .height(50.dp)
-            .fillMaxWidth()
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier
-                .fillMaxWidth()
-        ){
-            IconButton(
-                onClick = { /*TODO*/ }
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .width(45.dp)
-                ) {
 
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Home Icon",
-                        modifier = Modifier
-                            .size(27.dp)
-                    )
-                    Text(
-                        text = "Home",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Home Icon",
-                        modifier = Modifier
-                            .size(27.dp)
-                    )
-                    Text(
-                        text = "Search",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Home Icon",
-                        modifier = Modifier
-                            .size(27.dp)
-                    )
-                    Text(
-                        text = "Cart",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-
-            }
-        }
-    }
-}
 
 
 
