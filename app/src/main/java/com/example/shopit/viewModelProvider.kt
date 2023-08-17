@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.shopit.ui.screens.HomeScreenViewModel
 import com.example.shopit.ui.screens.ProductScreenViewModel
+import com.example.shopit.ui.screens.SearchScreenViewModel
 
 object viewModelProvider {
     val factory = viewModelFactory {
@@ -14,6 +15,9 @@ object viewModelProvider {
         }
         initializer {
             ProductScreenViewModel()
+        }
+        initializer {
+            SearchScreenViewModel(shopItApplication().container.databaseRepository)
         }
     }
 
