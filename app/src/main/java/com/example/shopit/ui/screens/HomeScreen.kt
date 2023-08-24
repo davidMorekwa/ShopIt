@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -262,9 +264,10 @@ fun SuccessScreen(
                             navController.navigate(Screens.PRODUCT_SCREEN.name)
                         }
                     },
-                    onCartClick = {
-                        println("Product ${it.title} added tp cart")
-                        cartScreenViewModel.addProductToCart(item)
+                    onAddToCartClick = {
+                        scope.launch {
+                            cartScreenViewModel.addProductToCart(item)
+                        }
                     }
                 )
         }
@@ -277,7 +280,7 @@ fun SuccessScreen(
 fun ProductItem(
     product: Product,
     onProductClick:(product: Product)-> Unit,
-    onCartClick: (product: Product)->Unit
+    onAddToCartClick: (product: Product)->Unit
 ) {
     var elevation by remember {
         mutableStateOf(0.dp)
@@ -286,6 +289,15 @@ fun ProductItem(
         elevation = 3.dp
     } else {
         elevation = 1.dp
+    }
+    var isAddedToCart by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var cartIcon = Icons.Outlined.ShoppingCart
+    cartIcon = if (isAddedToCart){
+        Icons.Filled.ShoppingCart
+    } else {
+        Icons.Outlined.ShoppingCart
     }
     Surface(
         tonalElevation = elevation,
@@ -329,13 +341,19 @@ fun ProductItem(
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 18.sp
                 )
-                Icon(
-                    imageVector = Icons.Outlined.ShoppingCart,
-                    contentDescription = "Add to cart",
-                    modifier = Modifier
-                        .size(25.dp)
-                        .clickable { onCartClick(product) }
-                )
+                IconButton(
+                    onClick = {
+                        onAddToCartClick(product)
+                        isAddedToCart = !isAddedToCart
+                    }
+                ) {
+                    Icon(
+                        imageVector = cartIcon,
+                        contentDescription = "Add to cart",
+                        modifier = Modifier
+                            .size(25.dp)
+                    )
+                }
             }
         }
     }

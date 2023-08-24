@@ -131,6 +131,14 @@ fun ProductView(
     var isFavorite by rememberSaveable {
         mutableStateOf(false)
     }
+    var favoriteIcon by remember{
+        mutableStateOf(Icons.Outlined.FavoriteBorder)
+    }
+    if(isFavorite){
+        favoriteIcon = Icons.Filled.Favorite
+    }else{
+        favoriteIcon = Icons.Outlined.FavoriteBorder
+    }
     var images = uiState.value.images
     val scrollState = rememberScrollState()
     Column(
@@ -180,10 +188,19 @@ fun ProductView(
                     modifier = Modifier
                         .weight(2f)
                 )
-                Icon(
-                    imageVector = Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favorites",
-                )
+                IconButton(
+                    onClick = {
+                        isFavorite = !isFavorite
+                        println("Favorite state: $isFavorite")
+
+                    }
+                ) {
+                    Icon(
+                        imageVector = favoriteIcon,
+                        contentDescription = "Favorites",
+                    )
+                }
+
             }
             Spacer(modifier = Modifier.height(25.dp))
             Row(
