@@ -51,7 +51,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository): Vie
         super.onCleared()
     }
 }
-private fun CartScreenViewModel.toCartView(product: Product): CartViewUiState{
+fun CartScreenViewModel.toCartView(product: Product): CartViewUiState{
     return CartViewUiState(
         id = product._id.toString(),
         title = product.title.toString(),

@@ -4,7 +4,7 @@ import com.example.shopit.data.model.Product
 import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.CartViewUiState
 
-class FakeRemoteDatabase: RemoteDatabaseRepository {
+class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
     override suspend fun getInitalProducts(): List<Product> {
         return FakeDataSource.productList
     }
