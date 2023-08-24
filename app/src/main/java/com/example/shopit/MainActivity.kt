@@ -48,6 +48,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.shopit.ui.screens.CartScreen
+import com.example.shopit.ui.screens.CartScreenViewModel
 import com.example.shopit.ui.screens.HomeScreen
 import com.example.shopit.ui.screens.HomeScreenViewModel
 import com.example.shopit.ui.screens.ProductScreen
@@ -73,9 +75,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 enum class Screens {
-    HOMESCREEN,
+    HOME_SCREEN,
     PRODUCT_SCREEN,
-    SEARCH_SCREEN
+    SEARCH_SCREEN,
+    CART_SCREEN
 }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,11 +89,12 @@ fun ShopItApp() {
     }
     val homeScreenViewModel:HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val productScreenViewModel:ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val cartScreenViewModel:CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomAppBar(
             onHomeClicked = {
-                navController.navigate(Screens.HOMESCREEN.name)
+                navController.navigate(Screens.HOME_SCREEN.name)
                 isActive = 1
                             },
             onSearchClick = {
@@ -98,19 +102,22 @@ fun ShopItApp() {
                 isActive = 2
                             },
             onCartClick = {
-                          isActive = 3
+                navController.navigate(Screens.CART_SCREEN.name)
+                cartScreenViewModel.getProductsInCart()
+                isActive = 3
             },
             isActive = isActive
         )}
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screens.HOMESCREEN.name
+            startDestination = Screens.HOME_SCREEN.name
         ){
             composable(
-                route = Screens.HOMESCREEN.name,
+                route = Screens.HOME_SCREEN.name,
                 exitTransition = {
                     fadeOut()
+//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
                 },
                 enterTransition = {
                     slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
@@ -122,7 +129,8 @@ fun ShopItApp() {
                 HomeScreen(
                     viewModel = homeScreenViewModel,
                     navController = navController,
-                    isActive = isActive
+                    isActive = isActive,
+                    cartScreenViewModel = cartScreenViewModel
                 )
             }
             composable(
@@ -141,6 +149,7 @@ fun ShopItApp() {
                 ProductScreen(
                     uiState = homeScreenViewModel.productUiState,
                     navController = navController,
+                    cartScreenViewModel = cartScreenViewModel
                 )
             }
             composable(
@@ -162,6 +171,23 @@ fun ShopItApp() {
                     onProductSearchResultClick = {
                         homeScreenViewModel.updateProductUiState(it)
                     }
+                )
+            }
+            composable(
+                route = Screens.CART_SCREEN.name,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                },
+                popEnterTransition = {
+                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                }
+            ){
+                CartScreen(
+                    viewModel = cartScreenViewModel,
+                    navController = navController
                 )
             }
 

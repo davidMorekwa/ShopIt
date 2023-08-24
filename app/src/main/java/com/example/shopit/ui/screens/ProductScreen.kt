@@ -5,6 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +21,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -83,6 +87,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun ProductScreen(
     uiState: StateFlow<ProductViewUiState>,
+    cartScreenViewModel: CartScreenViewModel,
     navController: NavController
 ) {
     val uiState = uiState.collectAsState()
@@ -102,6 +107,10 @@ fun ProductScreen(
     ) {
         ProductView(
             uiState = uiState,
+            onAddToCartClick = {
+                println("PRODUCT $it ADDED TO CART")
+//                cartScreenViewModel.addProductToCart(it)
+            }
         )
     }
 }
@@ -112,7 +121,10 @@ fun ProductScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @Composable
-fun ProductView(uiState: State<ProductViewUiState>) {
+fun ProductView(
+    uiState: State<ProductViewUiState>,
+    onAddToCartClick: (prodductId: String) -> Unit
+) {
     var productQuantity: String by remember {
         mutableStateOf("1")
     }
@@ -120,12 +132,12 @@ fun ProductView(uiState: State<ProductViewUiState>) {
         mutableStateOf(false)
     }
     var images = uiState.value.images
-
-    LazyColumn(
+    val scrollState = rememberScrollState()
+    Column(
         modifier= Modifier
             .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 52.dp)
+            .verticalScroll(scrollState)
     ) {
-        item(uiState.value._id){
             var pagerState = rememberPagerState(pageCount = {
                 uiState.value.images?.size ?: 0
             })
@@ -208,15 +220,14 @@ fun ProductView(uiState: State<ProductViewUiState>) {
                     fontWeight = FontWeight.ExtraBold,
 
                 )
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = {
+                    TODO("Add to cart from product screen")
+                    onAddToCartClick(uiState.value._id!!)
+                }) {
                     Text(text = "Add to Cart")
                 }
             }
         }
-
-
-        
-    }
 }
 
 

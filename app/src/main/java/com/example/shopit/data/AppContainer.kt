@@ -1,16 +1,17 @@
 package com.example.shopit.data
 
+import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 
 interface AppContainer{
-    val databaseRepository: DatabaseRepository
+    val remoteDatabaseRepository: RemoteDatabaseRepository
 }
 
 class DefaultAppContainer : AppContainer{
     private val database = Firebase.database
-    override val databaseRepository: DatabaseRepository by lazy {
+    override val remoteDatabaseRepository: RemoteDatabaseRepository by lazy {
         DefaultDatabaseRepository(database = database)
     }
 }

@@ -73,6 +73,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
     navController: NavController,
+    cartScreenViewModel: CartScreenViewModel,
     isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize()
@@ -172,7 +173,8 @@ fun HomeScreen(
                                     products = (uiState.value as HomeUiState.Success).products,
                                     viewModel = viewModel,
                                     navController = navController,
-                                    scope = scope
+                                    scope = scope,
+                                    cartScreenViewModel = cartScreenViewModel
                                 )
                             } else {
                                 Box(
@@ -239,6 +241,7 @@ fun LoadingScreen(
 fun SuccessScreen(
     products: List<Product>,
     viewModel: HomeScreenViewModel,
+    cartScreenViewModel: CartScreenViewModel,
     navController: NavController,
     scope: CoroutineScope,
     modifier: Modifier = Modifier
@@ -258,6 +261,10 @@ fun SuccessScreen(
                             viewModel.updateProductUiState(item)
                             navController.navigate(Screens.PRODUCT_SCREEN.name)
                         }
+                    },
+                    onCartClick = {
+                        println("Product ${it.title} added tp cart")
+                        cartScreenViewModel.addProductToCart(item)
                     }
                 )
         }
@@ -269,7 +276,8 @@ fun SuccessScreen(
 @Composable
 fun ProductItem(
     product: Product,
-    onProductClick:(product: Product)-> Unit
+    onProductClick:(product: Product)-> Unit,
+    onCartClick: (product: Product)->Unit
 ) {
     var elevation by remember {
         mutableStateOf(0.dp)
@@ -326,6 +334,7 @@ fun ProductItem(
                     contentDescription = "Add to cart",
                     modifier = Modifier
                         .size(25.dp)
+                        .clickable { onCartClick(product) }
                 )
             }
         }

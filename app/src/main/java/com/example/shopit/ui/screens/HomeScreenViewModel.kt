@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.DatabaseRepository
+import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.HomeUiState
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 
-class HomeScreenViewModel(private val repository: DatabaseRepository):ViewModel() {
+class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):ViewModel() {
     private val productScreenViewModel: ProductScreenViewModel = ProductScreenViewModel()
     private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
         private set
