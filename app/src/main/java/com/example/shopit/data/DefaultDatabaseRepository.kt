@@ -19,7 +19,7 @@ import kotlin.coroutines.suspendCoroutine
 class DefaultDatabaseRepository(private val database: FirebaseDatabase) : RemoteDatabaseRepository {
     private val productsRef = database.getReference("Products")
     private val cartRef = database.getReference("Cart")
-    override suspend fun getInitalProducts(): List<Product> {
+    override suspend fun getInitialProducts(): List<Product> {
 
         return suspendCoroutine { continuation: Continuation<List<Product>> ->
             var productList:MutableList<Product> = mutableListOf()
@@ -51,10 +51,31 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
                         if(snap.child("title").value.toString().contains(searchString) || snap.child("brand").value.toString().contains(searchString) || snap.child("primary_category").value.toString().contains(searchString)){
                             var product = snap.getValue<Product>()
                             searchResult.add(product!!)
-                            println("Search product ${product.title} added to searchResult")
                         }
                     }
                     continuation.resume(searchResult)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }
+    }
+
+    override suspend fun filterProductsByCategory(category: String): List<Product> {
+        return suspendCoroutine { continuation: Continuation<List<Product>> ->
+            var filterResult: MutableList<Product> = mutableListOf()
+            productsRef.addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (snap in snapshot.children){
+                        if(snap.child("primary_category").value.toString().contains(category)){
+                            var product = snap.getValue<Product>()
+                            filterResult.add(product!!)
+                        }
+                    }
+                    continuation.resume(filterResult)
                 }
 
                 override fun onCancelled(error: DatabaseError) {

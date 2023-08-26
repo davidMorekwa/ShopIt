@@ -15,7 +15,6 @@ import java.io.IOException
 
 
 class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):ViewModel() {
-    private val productScreenViewModel: ProductScreenViewModel = ProductScreenViewModel()
     private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
         private set
     var homeUiState = _homeUiState.asStateFlow()
@@ -24,7 +23,40 @@ class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):View
     )
         private set
     val productUiState = _productUiState.asStateFlow()
+    private var _categoryList: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
+    val categoryList = _categoryList.asStateFlow()
 
+    init {
+        println("Getting products")
+        getInitialProducts()
+    }
+    fun getCategories(homeUiState: HomeUiState): List<String>{
+        var tempCategoryList: MutableList<String> = mutableListOf("All")
+        if (homeUiState is HomeUiState.Success){
+            for (product in (_homeUiState.value as HomeUiState.Success).products){
+                if(!tempCategoryList.contains(product.primary_category.toString())){
+                    tempCategoryList.add(product.primary_category.toString())
+                }
+            }
+        } else {
+            return emptyList()
+        }
+        println("categories size: ${tempCategoryList.size}")
+        return tempCategoryList.toList()
+    }
+    fun getInitialProducts() {
+        viewModelScope.launch {
+            _homeUiState.value = try{
+                var products = repository.getInitialProducts()
+                println("PRODUCTS ${products.size}")
+                HomeUiState.Success(products)
+            } catch (e: IOException){
+                Log.e("ERROR", e.message.toString())
+                HomeUiState.Error
+            }
+            _categoryList.value = getCategories(_homeUiState.value)
+        }
+    }
     fun updateProductUiState(product: Product) {
         var images = product.images?.split("|") ?: emptyList()
         _productUiState.update { state ->
@@ -37,24 +69,16 @@ class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):View
                 specifications = product.speciications
             )
         }
-
     }
-
-    init {
-        println("Getting products")
-        getInitialProducts()
-    }
-
-
-
-    fun getInitialProducts() {
+    fun filterProductsByCategory(category: String){
         viewModelScope.launch {
-//            val product= repository.getInitalProducts()
-//            println("TITLE: ${product[1].title}")
+            if(category == "All"){
+                getInitialProducts()
+            }
             _homeUiState.value = try{
-                var products = repository.getInitalProducts()
-                println("PRODUCTS ${products.size}")
-                 HomeUiState.Success(products)
+                var products = repository.filterProductsByCategory(category)
+                println("PRODUCTS IN CATEGORY $category: ${products.size}")
+                HomeUiState.Success(products)
             } catch (e: IOException){
                 Log.e("ERROR", e.message.toString())
                 HomeUiState.Error

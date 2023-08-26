@@ -5,7 +5,7 @@ import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.CartViewUiState
 
 class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
-    override suspend fun getInitalProducts(): List<Product> {
+    override suspend fun getInitialProducts(): List<Product> {
         return FakeDataSource.productList
     }
 
@@ -23,5 +23,10 @@ class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
 
     override suspend fun removeProductFromCar(product: CartViewUiState) {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun filterProductsByCategory(category: String): List<Product> {
+        return FakeDataSource.productList
+            .filter { product: Product -> product.primary_category == category }
     }
 }
