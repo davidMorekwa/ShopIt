@@ -1,6 +1,7 @@
 package com.example.shopit.fake
 
 import com.example.shopit.data.model.Product
+import com.example.shopit.ui.uiStates.CartViewUiState
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -32,9 +33,23 @@ class RemoteDatabaseRepositoyTest {
                     main_image = FakeDataSource.urlThree,
                     primary_category = "Toys",
             )
-
             val actual = repo.filterProductsByCategory("Toys")
             assertEquals(expected, actual[1])
+        }
+    }
+    @Test
+    fun remoteDatabaseRepository_addQuantityInCart_verifyQuantity(){
+        runBlocking {
+            val expected = CartViewUiState(
+                id = FakeDataSource.idOne,
+                title = "Sample Title",
+                price = "!2.23",
+                quantity = "2",
+                main_image = FakeDataSource.urlOne,
+                images = "Sample images"
+            )
+            val actual = repo.addQuantity("img1", "2")
+            assertEquals(expected, actual)
         }
     }
 }

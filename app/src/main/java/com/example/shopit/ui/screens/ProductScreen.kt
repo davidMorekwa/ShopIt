@@ -123,7 +123,7 @@ fun ProductScreen(
 @Composable
 fun ProductView(
     uiState: State<ProductViewUiState>,
-    onAddToCartClick: (prodductId: String) -> Unit
+    onAddToCartClick: (prodduct: ProductViewUiState) -> Unit
 ) {
     var productQuantity: String by remember {
         mutableStateOf("1")
@@ -239,7 +239,7 @@ fun ProductView(
                 )
                 Button(onClick = {
                     TODO("Add to cart from product screen")
-                    onAddToCartClick(uiState.value._id!!)
+                    onAddToCartClick(uiState.value)
                 }) {
                     Text(text = "Add to Cart")
                 }

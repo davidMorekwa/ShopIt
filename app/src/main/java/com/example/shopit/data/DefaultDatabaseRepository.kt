@@ -20,10 +20,9 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
     private val productsRef = database.getReference("Products")
     private val cartRef = database.getReference("Cart")
     override suspend fun getInitialProducts(): List<Product> {
-
         return suspendCoroutine { continuation: Continuation<List<Product>> ->
             var productList:MutableList<Product> = mutableListOf()
-            productsRef.limitToFirst(12).addListenerForSingleValueEvent(object : ValueEventListener{
+            productsRef.limitToFirst(60).addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.exists()) {
                         for (productSnapshot in snapshot.children) { // Assuming 20 is the maximum index
@@ -63,7 +62,6 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
             })
         }
     }
-
     override suspend fun filterProductsByCategory(category: String): List<Product> {
         return suspendCoroutine { continuation: Continuation<List<Product>> ->
             var filterResult: MutableList<Product> = mutableListOf()
@@ -102,5 +100,13 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
     }
     override suspend fun removeProductFromCar(product: CartViewUiState) {
         cartRef.child(product.id).removeValue()
+    }
+    override suspend fun addQuantity(productId: String, quantity: String) {
+        TODO("Not yet implemented")
+
+    }
+    override suspend fun reduceQuantity(productId: String, quantity: String) {
+        TODO("Not yet implemented")
+
     }
 }
