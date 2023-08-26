@@ -1,6 +1,7 @@
 package com.example.shopit.fake
 
 import com.example.shopit.data.model.Product
+import com.example.shopit.ui.uiStates.CartViewUiState
 
 object FakeDataSource {
     const val idOne = "img1"
@@ -33,5 +34,23 @@ object FakeDataSource {
             primary_category = "Electronics",
         )
 
+    )
+    val cart = listOf<CartViewUiState>(
+        CartViewUiState(
+            id = idOne,
+            title = "Sample Title",
+            price = "!2.23",
+            quantity = "1",
+            main_image = urlOne,
+            images = "Sample images"
+        ),
+        CartViewUiState(
+            id = idTwo,
+            title = "Sample Title",
+            price = "!2.23",
+            quantity = "1",
+            main_image = urlTwo,
+            images = "Sample images"
+        )
     )
 }

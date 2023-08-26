@@ -38,7 +38,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,12 +76,31 @@ fun CartScreen(
         }
     ) {
         if (products.value.isNotEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 42.dp)
+        ) {
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "SUBTOTAL: $${subTotal.value}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Button(onClick = { /*TODO*/ }) {
+                    Text(text = "Checkout")
+                }
+            }
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .padding(top = 52.dp, start = 8.dp, end = 8.dp)
-                    .fillMaxSize()
             ) {
                 items(products.value) { item ->
                     CartProductItem(
@@ -90,12 +111,13 @@ fun CartScreen(
                                 viewModel.getProductsInCart()
                             }
 
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
 
             }
-            Text(text = "Subtotal: ${subTotal.value}")
+        }
         } else {
             Box(
                 modifier = Modifier
@@ -120,6 +142,7 @@ val tempCartProduct = CartViewUiState(
 @Composable
 fun CartProductItem(
     product: CartViewUiState,
+    viewModel: CartScreenViewModel,
     onRemoveFromCart:(product: CartViewUiState)->Unit
 ) {
     var quantity by rememberSaveable {
@@ -137,6 +160,7 @@ fun CartProductItem(
         ) {
             AsyncImage(
                 model = product.main_image,
+                contentScale = ContentScale.Crop,
                 contentDescription = "Image",
                 modifier = Modifier
                     .size(120.dp)
@@ -160,7 +184,10 @@ fun CartProductItem(
                     ) {
                         OutlinedButton(
                             contentPadding = PaddingValues(0.dp),
-                            onClick = { quantity++ },
+                            onClick = {
+                                quantity++
+//                                viewModel.addQuantity(product.id, quantity.toString())
+                            },
                             modifier = Modifier
                                 .width(45.dp)
                                 .height(35.dp)

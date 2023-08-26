@@ -29,4 +29,15 @@ class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
         return FakeDataSource.productList
             .filter { product: Product -> product.primary_category == category }
     }
+
+    override suspend fun addQuantity(productId: String, Quantity: String){
+        val prod = FakeDataSource.cart.filter { product: CartViewUiState -> product.id == productId }.first()
+        println("Initial quantity = ${prod.quantity}")
+        prod.quantity = "2"
+        println("Qty after: ${prod.quantity}")
+    }
+
+    override suspend fun reduceQuantity(productId: String, Quantity: String) {
+        TODO("Not yet implemented")
+    }
 }

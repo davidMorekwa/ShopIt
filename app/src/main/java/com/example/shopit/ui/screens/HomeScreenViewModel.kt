@@ -49,7 +49,7 @@ class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):View
             _homeUiState.value = try{
                 var products = repository.getInitialProducts()
                 println("PRODUCTS ${products.size}")
-                HomeUiState.Success(products)
+                HomeUiState.Success(products.shuffled())
             } catch (e: IOException){
                 Log.e("ERROR", e.message.toString())
                 HomeUiState.Error
