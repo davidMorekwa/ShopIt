@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -37,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,15 +59,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.Screens
 import com.example.shopit.data.model.Product
-import com.example.shopit.ui.theme.ShopItTheme
 import com.example.shopit.ui.uiStates.HomeUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -83,6 +86,7 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var uiState = viewModel.homeUiState.collectAsState()
+    var categories = viewModel.categoryList.collectAsState()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -164,7 +168,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 35.dp, bottom = 50.dp)
+                        .padding(top = 45.dp, bottom = 50.dp)
                 ){
                     when(uiState.value){
                         is HomeUiState.Error -> ErrorScreen()
@@ -176,7 +180,8 @@ fun HomeScreen(
                                     viewModel = viewModel,
                                     navController = navController,
                                     scope = scope,
-                                    cartScreenViewModel = cartScreenViewModel
+                                    cartScreenViewModel = cartScreenViewModel,
+                                    categories = categories.value
                                 )
                             } else {
                                 Box(
@@ -199,15 +204,8 @@ fun HomeScreen(
                 }
             }
         )
-
-
     }
 }
-
-
-
-
-
 @Composable
 fun ErrorScreen(
     modifier: Modifier = Modifier
@@ -242,6 +240,7 @@ fun LoadingScreen(
 @Composable
 fun SuccessScreen(
     products: List<Product>,
+    categories: List<String>,
     viewModel: HomeScreenViewModel,
     cartScreenViewModel: CartScreenViewModel,
     navController: NavController,
@@ -249,13 +248,34 @@ fun SuccessScreen(
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
-
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ){
-        itemsIndexed(products){
-            index,item: Product ->
+    var categorySelected by rememberSaveable {
+        mutableStateOf(1)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(start = 8.dp)
+        ) {
+            items(categories) { category: String ->
+                CategoryItem(
+                    category = category,
+                    onCategoryClick = {
+                        viewModel.filterProductsByCategory(category)
+                    }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(products) { item: Product ->
                 ProductItem(
                     product = item,
                     onProductClick = {
@@ -270,9 +290,27 @@ fun SuccessScreen(
                         }
                     }
                 )
+
+            }
         }
     }
+}
 
+@Composable
+fun CategoryItem(
+    category: String,
+    onCategoryClick: (category: String)->Unit
+) {
+    OutlinedButton(
+        onClick = {
+            println("Category $category button clicked")
+            onCategoryClick(category)
+        },
+    ) {
+        Text(
+            text = category,
+        )
+    }
 }
 
 
@@ -280,7 +318,7 @@ fun SuccessScreen(
 fun ProductItem(
     product: Product,
     onProductClick:(product: Product)-> Unit,
-    onAddToCartClick: (product: Product)->Unit
+    onAddToCartClick: (product: Product)->Unit,
 ) {
     var elevation by remember {
         mutableStateOf(0.dp)
@@ -307,66 +345,80 @@ fun ProductItem(
             .padding(vertical = 6.dp)
             .shadow(4.dp, shape = RoundedCornerShape(15.dp))
             .clickable { onProductClick(product) }
+            .height(300.dp)
 
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 5.dp)
+                .padding(bottom = 5.dp)
         ) {
             AsyncImage(
                 model = product.main_image,
                 contentDescription = "Product image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(15.dp))
+                    .size(160.dp)
             )
-            Text(
-                text = product.title.toString(),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp
-            )
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 5.dp)
             ) {
+//                Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "$${product.price.toString()}" ,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 18.sp
+                    text = product.title.toString(),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .height(90.dp)
                 )
-                IconButton(
-                    onClick = {
-                        onAddToCartClick(product)
-                        isAddedToCart = !isAddedToCart
-                    }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = cartIcon,
-                        contentDescription = "Add to cart",
-                        modifier = Modifier
-                            .size(25.dp)
+                    Text(
+                        text = "$${product.price.toString()}" ,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp
                     )
+                    IconButton(
+                        onClick = {
+                            onAddToCartClick(product)
+                            isAddedToCart = !isAddedToCart
+                        }
+                    ) {
+                        Icon(
+                            imageVector = cartIcon,
+                            contentDescription = "Add to cart",
+                            modifier = Modifier
+                                .size(25.dp)
+                        )
+                    }
                 }
             }
+
         }
     }
 }
 
 
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    ShopItTheme {
-//        SuccessScreen(products = temp)
-    }
-}
+//@Preview
+//@Composable
+//fun HomeScreenPreview() {
+//    ShopItTheme {
+////        SuccessScreen(products = temp)
+//    }
+//}
 val temp:List<Product> = listOf(
     Product(
         title = "Temp title",

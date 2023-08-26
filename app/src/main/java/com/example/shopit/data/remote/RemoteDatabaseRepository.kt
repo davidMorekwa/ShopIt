@@ -4,9 +4,10 @@ import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.CartViewUiState
 
 interface RemoteDatabaseRepository {
-    suspend fun getInitalProducts() : List<Product>
+    suspend fun getInitialProducts() : List<Product>
     suspend fun search(string: String): List<Product>
     suspend fun addProductToCart(product: CartViewUiState)
     suspend fun getProductsInCart():List<CartViewUiState>
     suspend fun removeProductFromCar(product: CartViewUiState)
+    suspend fun filterProductsByCategory(category: String):List<Product>
 }
