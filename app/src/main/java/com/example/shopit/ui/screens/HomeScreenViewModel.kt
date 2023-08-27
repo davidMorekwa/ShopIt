@@ -58,7 +58,7 @@ class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):View
         }
     }
     fun updateProductUiState(product: Product) {
-        var images = product.images?.split("|") ?: emptyList()
+        var images = product.images?.split(" | ") ?: emptyList()
         _productUiState.update { state ->
             state.copy(
                 _id = product._id,

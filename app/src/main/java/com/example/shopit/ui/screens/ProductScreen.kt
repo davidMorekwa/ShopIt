@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -57,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,11 +73,14 @@ import coil.compose.AsyncImagePainter
 import coil.compose.ImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.example.shopit.R
 import com.example.shopit.Screens
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.ProductViewUiState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.suspendCoroutine
@@ -110,7 +116,7 @@ fun ProductScreen(
             onAddToCartClick = {
                 println("PRODUCT $it ADDED TO CART")
 //                cartScreenViewModel.addProductToCart(it)
-            }
+            },
         )
     }
 }
@@ -123,7 +129,7 @@ fun ProductScreen(
 @Composable
 fun ProductView(
     uiState: State<ProductViewUiState>,
-    onAddToCartClick: (prodduct: ProductViewUiState) -> Unit
+    onAddToCartClick: (prodduct: ProductViewUiState) -> Unit,
 ) {
     var productQuantity: String by remember {
         mutableStateOf("1")
@@ -139,112 +145,120 @@ fun ProductView(
     }else{
         favoriteIcon = Icons.Outlined.FavoriteBorder
     }
-    var images = uiState.value.images
+    var images by rememberSaveable {
+        mutableStateOf(uiState.value.images!!)
+    }
     val scrollState = rememberScrollState()
+    var pagerState = rememberPagerState(
+        pageCount = {
+            images.size
+        }
+    )
     Column(
         modifier= Modifier
             .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 52.dp)
             .verticalScroll(scrollState)
     ) {
-            var pagerState = rememberPagerState(pageCount = {
-                uiState.value.images?.size ?: 0
-            })
-
-            HorizontalPager(
-                state = pagerState,
-                pageSize = PageSize.Fixed(270.dp),
-                contentPadding = PaddingValues(16.dp),
-                pageSpacing = 20.dp,
+        HorizontalPager(
+            state = pagerState,
+            pageSize = PageSize.Fixed(270.dp),
+            contentPadding = PaddingValues(16.dp),
+            pageSpacing = 20.dp,
+            modifier = Modifier
+                .padding(top = 20.dp)
+        ) { page ->
+            Surface(
+                shadowElevation = 10.dp,
+                shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
-                    .padding(top = 10.dp)
-            ) { page ->
-                Surface(
-                    shadowElevation = 10.dp,
-                    shape = RoundedCornerShape(15.dp),
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .height(270.dp)
-                        .graphicsLayer {
-                            val pageOffset = (
-                                    (pagerState.currentPage - page) + pagerState
-                                        .currentPageOffsetFraction
-                                    ).absoluteValue
-                            alpha = 0.5f + 0.5f * (1f - pageOffset.coerceIn(0f, 1f))
-                        }
-                ) {
-                    AsyncImage(model = images?.get(page), contentDescription = "Image")
-                    images?.get(page)?.let { Text(text = it.toString()) }
-                }
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Text(
-                    text = uiState.value.title.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .weight(2f)
-                )
-                IconButton(
-                    onClick = {
-                        isFavorite = !isFavorite
-                        println("Favorite state: $isFavorite")
-
+                    .padding(10.dp)
+                    .height(270.dp)
+                    .graphicsLayer {
+                        val pageOffset = (
+                                (pagerState.currentPage - page) + pagerState
+                                    .currentPageOffsetFraction
+                                ).absoluteValue
+                        alpha = 0.5f + 0.5f * (1f - pageOffset.coerceIn(0f, 1f))
                     }
-                ) {
-                    Icon(
-                        imageVector = favoriteIcon,
-                        contentDescription = "Favorites",
+            ) {
+                if(images.isNotEmpty()) {
+                    AsyncImage(
+                        model = images.get(page),
+                        contentDescription = "Images",
+                        contentScale = ContentScale.Crop
                     )
-                }
-
-            }
-            Spacer(modifier = Modifier.height(25.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(imageVector = Icons.Rounded.Star, contentDescription = "Rating")
-                Text(
-                    text = "Product Ratings"
-                )
-            }
-            Spacer(modifier = Modifier.height(25.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "Description",
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 15.sp
-                )
-                Text(text = uiState.value.description.toString())
-            }
-            Spacer(modifier = Modifier.height(25.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(
-                    text = "$${uiState.value.price.toString()}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.ExtraBold,
-
-                )
-                Button(onClick = {
-                    TODO("Add to cart from product screen")
-                    onAddToCartClick(uiState.value)
-                }) {
-                    Text(text = "Add to Cart")
                 }
             }
         }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Text(
+                text = uiState.value.title.toString(),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .weight(2f)
+            )
+            IconButton(
+                onClick = {
+                    isFavorite = !isFavorite
+                    println("Favorite state: $isFavorite")
+
+                }
+            ) {
+                Icon(
+                    imageVector = favoriteIcon,
+                    contentDescription = "Favorites",
+                )
+            }
+
+        }
+        Spacer(modifier = Modifier.height(25.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(imageVector = Icons.Rounded.Star, contentDescription = "Rating")
+            Text(
+                text = "Product Ratings"
+            )
+        }
+        Spacer(modifier = Modifier.height(25.dp))
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Description",
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 15.sp
+            )
+            Text(text = uiState.value.description.toString())
+        }
+        Spacer(modifier = Modifier.height(25.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = "$${uiState.value.price.toString()}",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
+
+                )
+            Button(onClick = {
+                TODO("Add to cart from product screen")
+                onAddToCartClick(uiState.value)
+            }) {
+                Text(text = "Add to Cart")
+            }
+        }
+    }
 }
 
 
@@ -256,6 +270,13 @@ fun ProdctScreenPeview() {
 
     }
 }
+
+val tempImageList = listOf<String>(
+    "https://target.scene7.com/is/image/Target/GUEST_d92527bd-8a67-4839-858e-d5555e24ba0e",
+    "https://target.scene7.com/is/image/Target/GUEST_69997084-6f84-4884-aa15-e0bf18168eb8",
+    "https://target.scene7.com/is/image/Target/GUEST_7b11b2c8-b43c-4838-b2e0-7a4bbfeaaa96",
+    "https://target.scene7.com/is/image/Target/GUEST_7cdcf801-2208-40ea-b39a-ba5680761b24"
+)
 
 
 val testProduct = Product(
