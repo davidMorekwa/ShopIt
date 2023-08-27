@@ -3,11 +3,14 @@ package com.example.shopit.ui.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,14 +19,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -56,6 +63,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -154,6 +162,10 @@ fun ProductView(
             images.size
         }
     )
+    val fling = PagerDefaults.flingBehavior(
+        state = pagerState,
+        pagerSnapDistance = PagerSnapDistance.atMost(10)
+    )
     Column(
         modifier= Modifier
             .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 52.dp)
@@ -164,11 +176,12 @@ fun ProductView(
             pageSize = PageSize.Fixed(270.dp),
             contentPadding = PaddingValues(16.dp),
             pageSpacing = 20.dp,
+            flingBehavior = fling,
             modifier = Modifier
-                .padding(top = 20.dp)
+                .padding(top = 20.dp, end = 8.dp)
         ) { page ->
             Surface(
-                shadowElevation = 10.dp,
+                shadowElevation = 5.dp,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(10.dp)
@@ -188,6 +201,28 @@ fun ProductView(
                         contentScale = ContentScale.Crop
                     )
                 }
+            }
+        }
+        Row(
+            Modifier
+                .height(50.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color =  if(isSystemInDarkTheme()) {
+                    if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
+                } else {
+                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(8.dp)
+
+                )
             }
         }
         Row(
