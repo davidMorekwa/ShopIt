@@ -50,6 +50,7 @@ import coil.compose.AsyncImage
 import com.example.shopit.R
 import com.example.shopit.ui.uiStates.CartViewUiState
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +62,7 @@ fun CartScreen(
     var products = viewModel.cartViewUiState.collectAsState()
     val subTotal = viewModel.subTotal.collectAsState()
     val scope = rememberCoroutineScope()
+    val df = DecimalFormat("#.##")
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -89,7 +91,7 @@ fun CartScreen(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "SUBTOTAL: $${subTotal.value}",
+                    text = "SUBTOTAL: $${df.format(subTotal.value)}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold
                 )

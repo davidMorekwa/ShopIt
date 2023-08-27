@@ -1,6 +1,7 @@
 package com.example.shopit.ui.screens
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -60,6 +61,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -337,6 +339,8 @@ fun ProductItem(
     } else {
         Icons.Outlined.ShoppingCart
     }
+
+    val context = LocalContext.current
     Surface(
         tonalElevation = elevation,
 //        shadowElevation = 4.dp,
@@ -395,6 +399,7 @@ fun ProductItem(
                         onClick = {
                             onAddToCartClick(product)
                             isAddedToCart = !isAddedToCart
+                            Toast.makeText(context, "Added to Cart!", Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Icon(
