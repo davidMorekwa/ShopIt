@@ -7,8 +7,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.shopit.data.DefaultDatabaseRepository
 import com.example.shopit.data.model.Product
+import com.example.shopit.data.remote.DefaultDatabaseRepository
 import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.screens.CartScreenViewModel
 import com.example.shopit.ui.screens.HomeScreenViewModel
