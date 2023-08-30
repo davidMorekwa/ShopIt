@@ -33,7 +33,6 @@ object FakeDataSource {
             main_image = urlFour,
             primary_category = "Electronics",
         )
-
     )
     val cart = listOf<CartViewUiState>(
         CartViewUiState(

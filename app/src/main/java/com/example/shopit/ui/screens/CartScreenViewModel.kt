@@ -8,7 +8,6 @@ import com.example.shopit.ui.uiStates.CartViewUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
 
 class CartScreenViewModel(private val repository: RemoteDatabaseRepository): ViewModel() {
     private var _cartScreenUiState:MutableStateFlow<List<CartViewUiState>> = MutableStateFlow(
@@ -42,6 +41,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository): Vie
                 println(e.message)
                 emptyList<CartViewUiState>()
             }
+            _subTotal.value = 0.0
             getSubtotal()
         }
     }

@@ -1,8 +1,7 @@
-package com.example.shopit.data
+package com.example.shopit.data.remote
 
 import android.util.Log
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.CartViewUiState
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -103,10 +102,8 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
     }
     override suspend fun addQuantity(productId: String, quantity: String) {
         TODO("Not yet implemented")
-
     }
     override suspend fun reduceQuantity(productId: String, quantity: String) {
         TODO("Not yet implemented")
-
     }
 }
