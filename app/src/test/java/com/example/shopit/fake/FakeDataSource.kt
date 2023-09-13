@@ -1,5 +1,6 @@
 package com.example.shopit.fake
 
+import com.example.shopit.data.model.OAuthResponse
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.CartViewUiState
 
@@ -51,5 +52,9 @@ object FakeDataSource {
             main_image = urlTwo,
             images = "Sample images"
         )
+    )
+    val response = OAuthResponse(
+        accessToken = "ThisIsASampleAccessToken",
+        expiresIn = "3600"
     )
 }

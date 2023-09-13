@@ -78,7 +78,7 @@ enum class Screens {
     HOME_SCREEN,
     PRODUCT_SCREEN,
     SEARCH_SCREEN,
-    CART_SCREEN
+    CART_SCREEN,
 }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -190,6 +190,23 @@ fun ShopItApp() {
                     navController = navController
                 )
             }
+//            composable(
+//                route = Screens.CHECKOUT_SCREEN.name,
+//                exitTransition = {
+//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+//                },
+//                enterTransition = {
+//                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+//                },
+//                popEnterTransition = {
+//                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+//                }
+//            ){
+//                CheckoutScreen(
+////                    subtotal = cartScreenViewModel.subTotal.collectAsState(),
+//                    navController = navController
+//                )
+//            }
 
         }
     }

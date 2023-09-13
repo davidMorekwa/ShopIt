@@ -9,7 +9,7 @@ data class LipaNaMpesaRequest(
     @Json(name = "AccountReference")
     var accountReference: String,
     @Json(name = "Amount")
-    var amount: Int,
+    var amount: Double,
     @Json(name = "BusinessShortCode")
     var businessShortCode: Int,
     @Json(name = "CallBackURL")
