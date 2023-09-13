@@ -175,10 +175,10 @@ fun ProductView(
             state = pagerState,
             pageSize = PageSize.Fixed(270.dp),
             contentPadding = PaddingValues(16.dp),
-            pageSpacing = 20.dp,
+            pageSpacing = 15.dp,
             flingBehavior = fling,
             modifier = Modifier
-                .padding(top = 20.dp, end = 8.dp)
+                .padding(top = 20.dp, end = 8.dp, start = 26.dp)
         ) { page ->
             Surface(
                 shadowElevation = 5.dp,

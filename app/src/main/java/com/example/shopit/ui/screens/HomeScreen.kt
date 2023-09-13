@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -250,9 +252,8 @@ fun SuccessScreen(
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
-    var categorySelected by rememberSaveable {
-        mutableStateOf(1)
-    }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -266,9 +267,7 @@ fun SuccessScreen(
             items(categories) { category: String ->
                 CategoryItem(
                     category = category,
-                    onCategoryClick = {
-                        viewModel.filterProductsByCategory(category)
-                    }
+                    onCategoryClick = { viewModel.filterProductsByCategory(category) }
                 )
             }
         }
@@ -301,18 +300,19 @@ fun SuccessScreen(
 @Composable
 fun CategoryItem(
     category: String,
-    onCategoryClick: (category: String)->Unit
+    onCategoryClick: (category: String)->Unit,
 ) {
     OutlinedButton(
         onClick = {
             println("Category $category button clicked")
             onCategoryClick(category)
-        },
+        }
     ) {
         Text(
             text = category,
         )
     }
+
 }
 
 

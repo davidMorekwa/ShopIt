@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.shopit.ui.screens.CartScreenViewModel
+import com.example.shopit.ui.screens.CheckoutViewModel
 import com.example.shopit.ui.screens.HomeScreenViewModel
 import com.example.shopit.ui.screens.ProductScreenViewModel
 import com.example.shopit.ui.screens.SearchScreenViewModel
@@ -21,7 +22,10 @@ object viewModelProvider {
             SearchScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
         }
         initializer {
-            CartScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
+            CartScreenViewModel(shopItApplication().container.remoteDatabaseRepository, shopItApplication().container.apiServiceRepository)
+        }
+        initializer {
+            CheckoutViewModel(shopItApplication().container.remoteDatabaseRepository)
         }
     }
 
