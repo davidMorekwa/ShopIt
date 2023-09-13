@@ -45,12 +45,16 @@ ShopIt offers the following features:
 ### Screenshots
 - [Home Screen]
 <img width="356" alt="Screenshot 2023-09-13 at 23 40 46" src="https://github.com/davidMorekwa/ShopIt/assets/70270638/73aa156f-4d1e-4548-80fa-4dcb3bf2e217">
+
 - [Product View]
 <img width="357" alt="Screenshot 2023-09-13 at 23 41 28" src="https://github.com/davidMorekwa/ShopIt/assets/70270638/11b850c8-b7b4-4cad-82cb-00c58f1d175d">
+
 - [Search Screen]
 <img width="354" alt="Screenshot 2023-09-13 at 23 41 46" src="https://github.com/davidMorekwa/ShopIt/assets/70270638/8349a56f-6a35-4831-969b-13a842d54d79">
+
 - [Search Result Screen]
 <img width="358" alt="Screenshot 2023-09-13 at 23 42 13" src="https://github.com/davidMorekwa/ShopIt/assets/70270638/13b2adf5-07f9-4257-9ab7-96db6c3147f4">
+
 - [Cart and Checkout Screen]
 <img width="354" alt="Screenshot 2023-09-13 at 23 42 34" src="https://github.com/davidMorekwa/ShopIt/assets/70270638/f941b461-47e7-4052-9f63-036c2554f8bb">
 
