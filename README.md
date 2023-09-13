@@ -5,12 +5,13 @@ Also utilises Material 3 design principles for a cohesive and visually appealing
 
 
 ## Table of Contents
--[Getting Started](#getting-started)
-    -[Prerequisites](#prerequisites)
-    -[Installation](#installation)
--[Features](#features)
--[Usage](#usage)
--[Screenshots](#screenshots)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+- [Features](#features)
+- [Usage](#usage)
+- [Screenshots](#screenshots)
+- [Contributing](#contributing)
 
 
 
