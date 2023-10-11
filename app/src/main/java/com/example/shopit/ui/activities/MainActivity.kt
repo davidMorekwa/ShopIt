@@ -1,9 +1,12 @@
-package com.example.shopit
+package com.example.shopit.ui.activities
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.EaseInOutQuart
 import androidx.compose.animation.core.TweenSpec
@@ -49,26 +52,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shopit.ui.screens.CartScreen
-import com.example.shopit.ui.screens.CartScreenViewModel
 import com.example.shopit.ui.screens.HomeScreen
-import com.example.shopit.ui.screens.HomeScreenViewModel
 import com.example.shopit.ui.screens.ProductScreen
-import com.example.shopit.ui.screens.ProductScreenViewModel
 import com.example.shopit.ui.screens.SearchScreen
 import com.example.shopit.ui.theme.ShopItTheme
+import com.example.shopit.ui.viewmodels.AuthViewModel
+import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.ui.viewmodels.HomeScreenViewModel
+import com.example.shopit.ui.viewmodels.ProductScreenViewModel
+import com.example.shopit.viewModelProvider
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
+    private val auth = FirebaseAuth.getInstance()
+    private val user = auth.currentUser
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            ShopItTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                    ShopItApp()
+        if (user == null){
+            startActivity(Intent(this, AuthActivity::class.java))
+        } else {
+            setContent {
+                ShopItTheme {
+                    // A surface container using the 'background' color from the theme
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        ShopItApp(
+                            onLogOutClick = {
+                                startActivity(Intent(this, AuthActivity::class.java))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -79,17 +95,25 @@ enum class Screens {
     PRODUCT_SCREEN,
     SEARCH_SCREEN,
     CART_SCREEN,
+    LOGIN_SCREEN,
+    REGISTRATION_SCREEN
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopItApp() {
+fun ShopItApp(
+    onLogOutClick: ()->Unit
+) {
+    val auth = FirebaseAuth.getInstance()
+    val user = auth.currentUser
     var isActive by remember {
         mutableStateOf(1)
     }
-    val homeScreenViewModel:HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
-    val productScreenViewModel:ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
-    val cartScreenViewModel:CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val productScreenViewModel: ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomAppBar(
@@ -113,6 +137,7 @@ fun ShopItApp() {
             navController = navController,
             startDestination = Screens.HOME_SCREEN.name
         ){
+
             composable(
                 route = Screens.HOME_SCREEN.name,
                 exitTransition = {
@@ -130,7 +155,9 @@ fun ShopItApp() {
                     viewModel = homeScreenViewModel,
                     navController = navController,
                     isActive = isActive,
-                    cartScreenViewModel = cartScreenViewModel
+                    cartScreenViewModel = cartScreenViewModel,
+                    authViewModel = authViewModel,
+                    onLogOutClick = onLogOutClick
                 )
             }
             composable(
@@ -149,7 +176,8 @@ fun ShopItApp() {
                 ProductScreen(
                     uiState = homeScreenViewModel.productUiState,
                     navController = navController,
-                    cartScreenViewModel = cartScreenViewModel
+                    cartScreenViewModel = cartScreenViewModel,
+                    productScreenViewModel = productScreenViewModel
                 )
             }
             composable(
@@ -260,13 +288,15 @@ fun BottomAppBar(
                 .fillMaxWidth()
         ) {
             IconButton(
-                onClick = { onHomeClicked() }
+                onClick = { onHomeClicked() },
+                modifier = Modifier
+                    .size(55.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(45.dp)
+                        .width(55.dp)
                 ) {
 
                     Icon(
@@ -282,9 +312,13 @@ fun BottomAppBar(
                 }
 
             }
-            IconButton(onClick = {
-                onSearchClick()
-            }) {
+            IconButton(
+                onClick = {
+                    onSearchClick()
+                },
+                modifier = Modifier
+                    .size(55.dp)
+            ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -304,7 +338,11 @@ fun BottomAppBar(
                 }
 
             }
-            IconButton(onClick = { onCartClick() }) {
+            IconButton(
+                onClick = { onCartClick() },
+                modifier = Modifier
+                    .size(55.dp)
+            ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -329,10 +367,13 @@ fun BottomAppBar(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     ShopItTheme {
-        ShopItApp()
+        ShopItApp(
+            onLogOutClick = {}
+        )
     }
 }

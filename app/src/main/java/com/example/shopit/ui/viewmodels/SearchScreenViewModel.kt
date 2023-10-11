@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

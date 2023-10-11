@@ -1,4 +1,4 @@
-package com.example.shopit.auth
+package com.example.shopit.auth.google
 
 data class SignInResult(
     val data: UserData?,

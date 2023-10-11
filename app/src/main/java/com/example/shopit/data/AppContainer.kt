@@ -1,10 +1,13 @@
 package com.example.shopit.data
 
+import com.example.shopit.auth.custom.AuthRepository
+import com.example.shopit.auth.custom.AuthRepositoryImpl
 import com.example.shopit.data.network.ApiServiceRepository
 import com.example.shopit.data.network.DarajaApiService
 import com.example.shopit.data.network.DefaultApiServiceRepository
 import com.example.shopit.data.remote.DefaultDatabaseRepository
 import com.example.shopit.data.remote.RemoteDatabaseRepository
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.moshi.Moshi
@@ -19,11 +22,13 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 interface AppContainer{
     val remoteDatabaseRepository: RemoteDatabaseRepository
     val apiServiceRepository: ApiServiceRepository
+    val authRepository: AuthRepository
 }
 
 class DefaultAppContainer : AppContainer{
     private val database = Firebase.database
     private val BASE_URL = "https://sandbox.safaricom.co.ke"
+    private val auth = FirebaseAuth.getInstance()
     private val moshi = Moshi.Builder()
         .addLast(KotlinJsonAdapterFactory())
         .build()
@@ -44,6 +49,9 @@ class DefaultAppContainer : AppContainer{
     }
     override val apiServiceRepository: ApiServiceRepository by lazy {
         DefaultApiServiceRepository(retrofitService)
+    }
+    override val authRepository: AuthRepository by lazy {
+        AuthRepositoryImpl(auth, database)
     }
 }
 class HeaderInterceptor(_token: String) : Interceptor{

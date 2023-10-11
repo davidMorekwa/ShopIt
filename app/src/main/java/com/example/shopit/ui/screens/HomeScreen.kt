@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
@@ -70,9 +71,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.shopit.Screens
 import com.example.shopit.data.model.Product
+import com.example.shopit.ui.activities.Screens
 import com.example.shopit.ui.uiStates.HomeUiState
+import com.example.shopit.ui.viewmodels.AuthViewModel
+import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.ui.viewmodels.HomeScreenViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -83,6 +90,8 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel,
     navController: NavController,
     cartScreenViewModel: CartScreenViewModel,
+    authViewModel: AuthViewModel,
+    onLogOutClick: ()->Unit,
     isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize()
@@ -130,7 +139,7 @@ fun HomeScreen(
             )
         },
     ) {
-        val selectedItem = remember { mutableStateOf(tempMenu[0].id) }
+        val selectedItem = remember { mutableStateOf(menuItems[0].id) }
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -150,10 +159,16 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(52.dp)
                         )
-                        Text(text = "davenyamongo16@gmail.com")
+                        Firebase.auth.currentUser?.email?.let { it1 ->
+                            Text(
+                                text = it1,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 13.sp
+                            )
+                        }
                     }
                     Spacer(Modifier.height(52.dp))
-                    tempMenu.forEach { item ->
+                    menuItems.forEach { item ->
                         NavigationDrawerItem(
                             icon = { Icon(item.icon, contentDescription = item.description) },
                             label = { Text(item.title) },
@@ -161,6 +176,10 @@ fun HomeScreen(
                             onClick = {
                                 scope.launch { drawerState.close() }
                                 selectedItem.value = item.id
+                                if (selectedItem.value == 4){
+                                    authViewModel.logOut()
+                                    onLogOutClick()
+                                }
                             },
                             modifier = Modifier
                                 .padding(vertical = 8.dp)
@@ -463,7 +482,7 @@ data class MenuItem(
     val description: String
 )
 
-val tempMenu: List<MenuItem> = listOf(
+val menuItems: List<MenuItem> = listOf(
     MenuItem(
         id = 1,
         title = "Home",
@@ -482,7 +501,12 @@ val tempMenu: List<MenuItem> = listOf(
         icon = Icons.Default.List,
         description = "Cart Icon"
     ),
-
+    MenuItem(
+        id = 4,
+        title = "LogOut",
+        icon = Icons.Default.ExitToApp,
+        description = "Logout Icon"
+    )
     
 )
 

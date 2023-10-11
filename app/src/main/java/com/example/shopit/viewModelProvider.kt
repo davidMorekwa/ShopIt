@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.shopit.ui.screens.CartScreenViewModel
-import com.example.shopit.ui.screens.CheckoutViewModel
-import com.example.shopit.ui.screens.HomeScreenViewModel
-import com.example.shopit.ui.screens.ProductScreenViewModel
-import com.example.shopit.ui.screens.SearchScreenViewModel
+import com.example.shopit.ui.viewmodels.AuthViewModel
+import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.ui.viewmodels.CheckoutViewModel
+import com.example.shopit.ui.viewmodels.HomeScreenViewModel
+import com.example.shopit.ui.viewmodels.ProductScreenViewModel
+import com.example.shopit.ui.viewmodels.SearchScreenViewModel
 
 object viewModelProvider {
     val factory = viewModelFactory {
@@ -16,7 +17,7 @@ object viewModelProvider {
             HomeScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
         }
         initializer {
-            ProductScreenViewModel()
+            ProductScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
         }
         initializer {
             SearchScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
@@ -26,6 +27,9 @@ object viewModelProvider {
         }
         initializer {
             CheckoutViewModel(shopItApplication().container.remoteDatabaseRepository)
+        }
+        initializer {
+            AuthViewModel(shopItApplication().container.authRepository)
         }
     }
 
