@@ -59,10 +59,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.shopit.R
 import com.example.shopit.ui.uiStates.CartViewUiState
+import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -262,7 +266,10 @@ fun CartScreen(
                             ) {
                                 OutlinedTextField(
                                     value = phoneNumber,
-                                    onValueChange = { phoneNumber = it },
+                                    onValueChange = {
+                                        phoneNumber = it
+                                        println(phoneNumber)
+                                    },
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Phone,
                                         imeAction = ImeAction.Done
@@ -283,7 +290,8 @@ fun CartScreen(
                                 Button(
                                     onClick = {
                                         scope.launch {
-                                            viewModel.getAccessToken()
+                                            viewModel.checkout("254$phoneNumber")
+//                                            viewModel.getAccessToken()
                                         }
                                     }
                                 ) {
@@ -412,13 +420,14 @@ fun CartProductItem(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun CartScreenPreview() {
     MaterialTheme {
-//        CartScreen(
-//            viewModel = viewModel(factory = viewModelProvider.factory),
-//            navController = rememberNavController()
-//        )
+        CartScreen(
+            viewModel = viewModel(factory = viewModelProvider.factory),
+            navController = rememberNavController()
+        )
     }
 }

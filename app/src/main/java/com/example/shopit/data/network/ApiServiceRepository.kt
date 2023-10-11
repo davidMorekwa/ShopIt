@@ -1,57 +1,64 @@
 package com.example.shopit.data.network
 
-import com.example.shopit.data.model.LipaNaMpesaRequest
+import com.androidstudy.daraja.Daraja
+import com.androidstudy.daraja.callback.DarajaResult
+import com.androidstudy.daraja.util.Environment
+import com.example.shopit.data.model.OAuthResponse
+import com.example.shopit.data.utlis.AppUtils
+import com.example.shopit.data.utlis.Config
 import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
+import retrofit2.Response
 
 
 interface ApiServiceRepository {
-    suspend fun getOAuthAccessoken(): Response
-    suspend fun makePayment(request: LipaNaMpesaRequest, token: String): Response
+    suspend fun getOAuthAccessoken(): Response<OAuthResponse>
+    suspend fun makePayment(phoneNumber: String, amount: String, token: String)
 }
 
 class DefaultApiServiceRepository(private val apiService: DarajaApiService):ApiServiceRepository{
     val gson = Gson()
-    override suspend fun getOAuthAccessoken(): Response {
-        val client = OkHttpClient().newBuilder().build()
-        val request: Request = Request.Builder()
-            .url("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials")
-            .method("GET", null)
-            .addHeader(
-                "Authorization",
-                "Basic cFJZcjZ6anEwaThMMXp6d1FETUxwWkIzeVBDa2hNc2M6UmYyMkJmWm9nMHFRR2xWOQ=="
-            )
-            .build()
-        val response: Response = client.newCall(request).execute()
+    override suspend fun getOAuthAccessoken(): Response<OAuthResponse> {
+        val response = apiService.getOAuthToken()
+        println("RESPONSE!!")
+        println(response.body()?.accessToken)
         return response
     }
 
-    override suspend fun makePayment(request: LipaNaMpesaRequest, token: String): Response {
-//        println("DefautApiRepo Access Token: $token")
-//        val response = apiService.makePayment(request)
-//        return response
-        val client = OkHttpClient().newBuilder().build();
-        val mediaType = "application/json".toMediaTypeOrNull();
-
-        val reque = gson.toJson(request)
-
-        val body = RequestBody.create(
-            mediaType,
-            reque
-        )
-        val req = Request.Builder()
-            .url("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest")
-            .method("POST", body)
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "Bearer $token")
-            .build();
-        println("Request: $req")
-        val response = client.newCall(req).execute()
+    override suspend fun makePayment(phoneNumber: String, amount: String, token: String) {
+        val daraja = getDaraja()
+        val response = daraja.initiatePayment(
+            token ="dHtKoGLgfFpRFpVvYA0WteefVQNL",
+            phoneNumber = phoneNumber,
+            amount = "1",
+            accountReference = AppUtils.generateUUID(),
+            description = "Purchase of Goods on ShopIt"
+        ) { darajaResult ->
+            when (darajaResult) {
+                is DarajaResult.Success -> {
+                    val result = darajaResult.value
+                    println("RESULT: ${result}")
+                }
+                is DarajaResult.Failure -> {
+                    val exception = darajaResult.darajaException
+                    if (darajaResult.isNetworkError) {
+                        println("Network Error")
+                    } else {
+                        println("Payment Failure")
+                        println(exception.toString())
+                    }
+                }
+            }
+        }
         return response
+    }
+    private fun getDaraja(): Daraja {
+        return Daraja.builder(Config.CONSUMER_KEY, Config.CONSUMER_SECRET)
+            .setBusinessShortCode(Config.BUSINESS_SHORTCODE)
+            .setPassKey(AppUtils.passKey)
+            .setTransactionType(Config.ACCOUNT_TYPE)
+            .setCallbackUrl(Config.CALLBACK_URL)
+            .setEnvironment(Environment.SANDBOX)
+            .build()
     }
 
 }

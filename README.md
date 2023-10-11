@@ -43,7 +43,7 @@ ShopIt offers the following features:
 3. Proceed to the checkout.
 
 ### Screenshots
-![Screenshot 2023-09-13 at 23.20.56.png](..%2F..%2F..%2F..%2Fvar%2Ffolders%2F9z%2F9zskl2nn7yncxrjvndcr7frh0000gp%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_b2HFOY%2FScreenshot%202023-09-13%20at%2023.20.56.png)
+
 
 ### Contributing
 Contributions to ShopIt are welcome! If you'd like to contribute, please follow these steps:

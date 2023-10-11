@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

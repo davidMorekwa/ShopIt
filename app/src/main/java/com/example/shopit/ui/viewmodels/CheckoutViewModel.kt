@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.example.shopit.data.remote.RemoteDatabaseRepository

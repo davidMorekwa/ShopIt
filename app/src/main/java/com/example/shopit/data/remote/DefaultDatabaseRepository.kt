@@ -3,6 +3,8 @@ package com.example.shopit.data.remote
 import android.util.Log
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.CartViewUiState
+import com.example.shopit.ui.uiStates.ProductViewUiState
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -18,6 +20,8 @@ import kotlin.coroutines.suspendCoroutine
 class DefaultDatabaseRepository(private val database: FirebaseDatabase) : RemoteDatabaseRepository {
     private val productsRef = database.getReference("Products")
     private val cartRef = database.getReference("Cart")
+    private val favoriteRef = database.getReference("Favorites")
+    private var userId = FirebaseAuth.getInstance().currentUser?.uid
     override suspend fun getInitialProducts(): List<Product> {
         return suspendCoroutine { continuation: Continuation<List<Product>> ->
             var productList:MutableList<Product> = mutableListOf()
@@ -84,15 +88,18 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
     }
     override suspend fun addProductToCart(product: CartViewUiState) {
         cartRef.child(product.id).setValue(product)
+        cartRef.child(product.id).child("userId").setValue(userId)
         println("Product ${product.title} added to cart document")
     }
     override suspend fun getProductsInCart():List<CartViewUiState> {
         var cartList: MutableList<CartViewUiState> = mutableListOf()
         val snapshot = cartRef.get().await()
         for (snap in snapshot.children) {
-            var cartItem = snap.getValue<CartViewUiState>() ?: CartViewUiState()
-            println("Product  retrieved from cart: ${cartItem.title}")
-            cartList.add(cartItem)
+            if(snap.child("userId").value == userId){
+                var cartItem = snap.getValue<CartViewUiState>() ?: CartViewUiState()
+                println("Product  retrieved from cart: ${cartItem.title}")
+                cartList.add(cartItem)
+            }
         }
         println("Cart size: ${cartList.size}")
         return cartList
@@ -105,5 +112,10 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
     }
     override suspend fun reduceQuantity(productId: String, quantity: String) {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun addtoFavorites(productViewUiState: ProductViewUiState) {
+        productViewUiState._id?.let { favoriteRef.child(it).setValue(productViewUiState) }
+        println("Product ${productViewUiState.title} has been added to favorites")
     }
 }

@@ -1,4 +1,4 @@
-package com.example.shopit.auth
+package com.example.shopit.auth.google
 
 import android.content.Context
 import android.content.Intent
@@ -30,7 +30,7 @@ class GoogleAuthClient(
         return result?.pendingIntent?.intentSender
     }
 
-    suspend fun getSignInResultFromIntent(intent: Intent):SignInResult{
+    suspend fun getSignInResultFromIntent(intent: Intent): SignInResult {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
@@ -67,7 +67,7 @@ class GoogleAuthClient(
         }
     }
 
-    fun getSignedInUser():UserData? = auth.currentUser?.run {
+    fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
             userId = uid,
             userEmail = email,
