@@ -1,6 +1,5 @@
 package com.example.shopit.data.remote
 
-import android.util.Log
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.CartViewUiState
 import com.example.shopit.ui.uiStates.ProductViewUiState
@@ -35,14 +34,12 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
                     }
                     continuation.resume(productList)
                 }
-
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                    Log.e("DATABASE_ERROR", error.message)
+                    println("GET PRODUCTS ERROR!!!")
+                    println(error.message)
                 }
             })
         }
-
     }
     override suspend fun search(searchString: String): List<Product> {
         return suspendCoroutine { continuation: Continuation<List<Product>> ->
@@ -57,11 +54,10 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
                     }
                     continuation.resume(searchResult)
                 }
-
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    println("SEARCH ERROR!!!")
+                    println(error.message)
                 }
-
             })
         }
     }
@@ -78,11 +74,10 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
                     }
                     continuation.resume(filterResult)
                 }
-
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    println("FILTER PRODUCT BY CATEGORY ERROR!!!")
+                    println(error.message)
                 }
-
             })
         }
     }
@@ -104,18 +99,34 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
         println("Cart size: ${cartList.size}")
         return cartList
     }
-    override suspend fun removeProductFromCar(product: CartViewUiState) {
+    override suspend fun removeProductFromCart(product: CartViewUiState) {
         cartRef.child(product.id).removeValue()
     }
-    override suspend fun addQuantity(productId: String, quantity: String) {
-        TODO("Not yet implemented")
+    override suspend fun changeQuantity(productId: String, quantity: String) {
+        if (quantity.toInt() > 0) {
+            cartRef.child(productId).child("quantity").setValue(quantity)
+        } else {
+            cartRef.child(productId).removeValue()
+        }
     }
-    override suspend fun reduceQuantity(productId: String, quantity: String) {
-        TODO("Not yet implemented")
+    override suspend fun addtoFavorites(productViewUiState: ProductViewUiState) {
+        productViewUiState._id?.let {
+            favoriteRef.child(it).setValue(productViewUiState)
+            favoriteRef.child(it).child("userId").setValue(userId)
+        }
+        println("Product ${productViewUiState.title} has been added to favorites")
     }
 
-    override suspend fun addtoFavorites(productViewUiState: ProductViewUiState) {
-        productViewUiState._id?.let { favoriteRef.child(it).setValue(productViewUiState) }
-        println("Product ${productViewUiState.title} has been added to favorites")
+    override suspend fun getFavorites(): List<ProductViewUiState> {
+        val favoriteProductsList: MutableList<ProductViewUiState> = mutableListOf()
+        val snapshot = favoriteRef.get().await()
+        for(snap in snapshot.children){
+            if(snap.child("userId").value == userId){
+                var favoriteProductItem = snap.getValue<ProductViewUiState>() ?: ProductViewUiState()
+                println("Product retrieved from favorites: ${favoriteProductItem.title}")
+                favoriteProductsList.add(favoriteProductItem)
+            }
+        }
+        return favoriteProductsList
     }
 }

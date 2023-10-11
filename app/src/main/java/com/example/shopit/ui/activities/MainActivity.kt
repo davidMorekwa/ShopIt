@@ -58,6 +58,7 @@ import com.example.shopit.ui.screens.SearchScreen
 import com.example.shopit.ui.theme.ShopItTheme
 import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
 import com.example.shopit.ui.viewmodels.HomeScreenViewModel
 import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.example.shopit.viewModelProvider
@@ -96,7 +97,8 @@ enum class Screens {
     SEARCH_SCREEN,
     CART_SCREEN,
     LOGIN_SCREEN,
-    REGISTRATION_SCREEN
+    REGISTRATION_SCREEN,
+    FAVORITES_SCREEN
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -113,6 +115,7 @@ fun ShopItApp(
     val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val productScreenViewModel: ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
     val navController = rememberNavController()
     Scaffold(
@@ -152,12 +155,13 @@ fun ShopItApp(
                 }
             ){
                 HomeScreen(
-                    viewModel = homeScreenViewModel,
+                    homeScreenViewModel = homeScreenViewModel,
                     navController = navController,
                     isActive = isActive,
                     cartScreenViewModel = cartScreenViewModel,
                     authViewModel = authViewModel,
-                    onLogOutClick = onLogOutClick
+                    onLogOutClick = onLogOutClick,
+                    favoriteScreenViewModel = favoriteScreenViewModel,
                 )
             }
             composable(
@@ -174,10 +178,10 @@ fun ShopItApp(
                 }
             ){
                 ProductScreen(
-                    uiState = homeScreenViewModel.productUiState,
                     navController = navController,
                     cartScreenViewModel = cartScreenViewModel,
-                    productScreenViewModel = productScreenViewModel
+                    productScreenViewModel = productScreenViewModel,
+                    homeScreenViewModel = homeScreenViewModel
                 )
             }
             composable(
@@ -193,7 +197,7 @@ fun ShopItApp(
                 }
             ){
                 SearchScreen(
-                    viewModel = viewModel(factory = viewModelProvider.factory),
+                    searchScreenViewModel = viewModel(factory = viewModelProvider.factory),
                     navController = navController,
                     isActive = isActive,
                     onProductSearchResultClick = {
@@ -214,12 +218,12 @@ fun ShopItApp(
                 }
             ){
                 CartScreen(
-                    viewModel = cartScreenViewModel,
+                    cartScreenViewModel = cartScreenViewModel,
                     navController = navController
                 )
             }
 //            composable(
-//                route = Screens.CHECKOUT_SCREEN.name,
+//                route = Screens.FAVORITES_SCREEN.name,
 //                exitTransition = {
 //                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
 //                },
@@ -230,9 +234,12 @@ fun ShopItApp(
 //                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
 //                }
 //            ){
-//                CheckoutScreen(
-////                    subtotal = cartScreenViewModel.subTotal.collectAsState(),
-//                    navController = navController
+//                FavoritesScreen(
+//                    favoriteScreenViewModel = favoriteScreenViewModel,
+//                    navController = navController,
+//                    onFavoriteProductClick = {
+//
+//                    }
 //                )
 //            }
 

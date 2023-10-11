@@ -76,8 +76,8 @@ import com.example.shopit.ui.activities.Screens
 import com.example.shopit.ui.uiStates.HomeUiState
 import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
 import com.example.shopit.ui.viewmodels.HomeScreenViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
@@ -87,9 +87,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel,
+    homeScreenViewModel: HomeScreenViewModel,
     navController: NavController,
     cartScreenViewModel: CartScreenViewModel,
+    favoriteScreenViewModel: FavoriteScreenViewModel,
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
     isActive: Int,
@@ -98,14 +99,15 @@ fun HomeScreen(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var uiState = viewModel.homeUiState.collectAsState()
-    var categories = viewModel.categoryList.collectAsState()
+    var uiState = homeScreenViewModel.homeUiState.collectAsState()
+    var categories = homeScreenViewModel.categoryList.collectAsState()
+    val selectedItem = remember { mutableStateOf(menuItems[0].id) }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Home",
+                        text = if(selectedItem.value == 1) "Home" else if(selectedItem.value == 3) "Wishlist" else "Settings",
                         fontSize = 17.sp,
                         modifier = Modifier
                             .padding(top = 8.dp)
@@ -139,7 +141,7 @@ fun HomeScreen(
             )
         },
     ) {
-        val selectedItem = remember { mutableStateOf(menuItems[0].id) }
+
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -188,42 +190,49 @@ fun HomeScreen(
                 }
             },
             content = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 45.dp, bottom = 50.dp)
-                ){
-                    when(uiState.value){
-                        is HomeUiState.Error -> ErrorScreen()
-                        is HomeUiState.Loading -> LoadingScreen()
-                        is HomeUiState.Success -> {
-                            if((uiState.value as HomeUiState.Success).products.isNotEmpty()){
-                                SuccessScreen(
-                                    products = (uiState.value as HomeUiState.Success).products,
-                                    viewModel = viewModel,
-                                    navController = navController,
-                                    scope = scope,
-                                    cartScreenViewModel = cartScreenViewModel,
-                                    categories = categories.value
-                                )
-                            } else {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                if (selectedItem.value == 3){
+                    FavoritesScreen(
+                        favoriteScreenViewModel = favoriteScreenViewModel,
+                        navController = navController,
+                    )
+                } else if(selectedItem.value == 1) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 45.dp, bottom = 50.dp)
+                    ) {
+                        when (uiState.value) {
+                            is HomeUiState.Error -> ErrorScreen()
+                            is HomeUiState.Loading -> LoadingScreen()
+                            is HomeUiState.Success -> {
+                                if ((uiState.value as HomeUiState.Success).products.isNotEmpty()) {
+                                    SuccessScreen(
+                                        products = (uiState.value as HomeUiState.Success).products,
+                                        viewModel = homeScreenViewModel,
+                                        navController = navController,
+                                        scope = scope,
+                                        cartScreenViewModel = cartScreenViewModel,
+                                        categories = categories.value
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        CircularProgressIndicator(
-                                            color = MaterialTheme.colorScheme.tertiary
-                                        )
-                                        Text(text = "Loading...")
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = MaterialTheme.colorScheme.tertiary
+                                            )
+                                            Text(text = "Loading...")
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
+                    }
                 }
             }
         )
@@ -352,8 +361,7 @@ fun ProductItem(
     var isAddedToCart by rememberSaveable {
         mutableStateOf(false)
     }
-    var cartIcon = Icons.Outlined.ShoppingCart
-    cartIcon = if (isAddedToCart){
+    var cartIcon = if (isAddedToCart){
         Icons.Filled.ShoppingCart
     } else {
         Icons.Outlined.ShoppingCart
@@ -368,7 +376,6 @@ fun ProductItem(
             .padding(vertical = 6.dp)
             .shadow(4.dp, shape = RoundedCornerShape(15.dp))
             .clickable { onProductClick(product) }
-            .height(300.dp)
 
     ) {
         Column(
@@ -385,10 +392,10 @@ fun ProductItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(15.dp))
-                    .size(160.dp)
+                    .size(120.dp)
             )
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .padding(top = 0.dp, end = 8.dp, start = 8.dp, bottom = 5.dp)
             ) {
@@ -399,8 +406,7 @@ fun ProductItem(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .height(90.dp)
+                    maxLines = 2,
                 )
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,

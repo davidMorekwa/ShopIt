@@ -55,13 +55,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import com.example.shopit.ui.viewmodels.CartScreenViewModel
+import com.example.shopit.ui.viewmodels.HomeScreenViewModel
 import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.example.shopit.ui.viewmodels.toProduct
+import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.absoluteValue
 
@@ -71,12 +74,13 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ProductScreen(
-    uiState: StateFlow<ProductViewUiState>,
     cartScreenViewModel: CartScreenViewModel,
     productScreenViewModel: ProductScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
-    val uiState = uiState.collectAsState()
+
+    val uiState = homeScreenViewModel.productUiState.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
