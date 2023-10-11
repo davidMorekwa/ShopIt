@@ -20,7 +20,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     private var _cartScreenUiState:MutableStateFlow<List<CartViewUiState>> = MutableStateFlow(
         listOf()
     )
-    private var _subTotal:MutableStateFlow<Double> = MutableStateFlow(12.0)
+    private var _subTotal:MutableStateFlow<Double> = MutableStateFlow(0.0)
     var cartViewUiState = _cartScreenUiState.asStateFlow()
     var subTotal = _subTotal.asStateFlow()
     fun addProductToCart(product : Product){
@@ -37,7 +37,6 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
         }
         println("Cart subtotal: ${subTotal.value}")
     }
-
     fun getProductsInCart() {
         viewModelScope.launch(Dispatchers.IO) {
             _cartScreenUiState.value = try {
@@ -52,7 +51,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     }
     fun removeProductFromCart(product: CartViewUiState){
         viewModelScope.launch {
-            repository.removeProductFromCar(product)
+            repository.removeProductFromCart(product)
         }
     }
     suspend fun getAccessToken(): String? {
@@ -78,7 +77,18 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
             }
         }
     }
-
+    fun incrementProductQuantity(productID: String, quantity: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.changeQuantity(productID, quantity)
+            getProductsInCart()
+        }
+    }
+    fun decrementProductQuantity(productID: String, quantity: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.changeQuantity(productId = productID, quantity = quantity)
+            getProductsInCart()
+        }
+    }
     override fun onCleared() {
         super.onCleared()
     }

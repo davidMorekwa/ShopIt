@@ -81,11 +81,11 @@ enum class PaymentMethods{
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
-    viewModel: CartScreenViewModel,
+    cartScreenViewModel: CartScreenViewModel,
     navController: NavController
 ) {
-    var products = viewModel.cartViewUiState.collectAsState()
-    val subTotal = viewModel.subTotal.collectAsState()
+    var products = cartScreenViewModel.cartViewUiState.collectAsState()
+    val subTotal = cartScreenViewModel.subTotal.collectAsState()
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var isBottomModalSheetVisible: Boolean by rememberSaveable {
@@ -151,12 +151,12 @@ fun CartScreen(
                         product = item,
                         onRemoveFromCart = {
                             scope.launch {
-                                viewModel.removeProductFromCart(item)
-                                viewModel.getProductsInCart()
+                                cartScreenViewModel.removeProductFromCart(item)
+                                cartScreenViewModel.getProductsInCart()
                             }
 
                         },
-                        viewModel = viewModel
+                        viewModel = cartScreenViewModel
                     )
                 }
 
@@ -290,8 +290,7 @@ fun CartScreen(
                                 Button(
                                     onClick = {
                                         scope.launch {
-                                            viewModel.checkout("254$phoneNumber")
-//                                            viewModel.getAccessToken()
+                                            cartScreenViewModel.checkout("254$phoneNumber")
                                         }
                                     }
                                 ) {
@@ -373,7 +372,7 @@ fun CartProductItem(
                             contentPadding = PaddingValues(0.dp),
                             onClick = {
                                 quantity++
-//                                viewModel.addQuantity(product.id, quantity.toString())
+                                viewModel.incrementProductQuantity(productID = product.id, quantity = quantity.toString())
                             },
                             modifier = Modifier
                                 .width(45.dp)
@@ -390,7 +389,10 @@ fun CartProductItem(
                         )
                         OutlinedButton(
                             contentPadding = PaddingValues(0.dp),
-                            onClick = { quantity-- },
+                            onClick = {
+                                quantity--
+                                viewModel.decrementProductQuantity(productID = product.id, quantity = quantity.toString())
+                            },
                             modifier = Modifier
                                 .width(45.dp)
                                 .height(35.dp)
@@ -426,7 +428,7 @@ fun CartProductItem(
 fun CartScreenPreview() {
     MaterialTheme {
         CartScreen(
-            viewModel = viewModel(factory = viewModelProvider.factory),
+            cartScreenViewModel = viewModel(factory = viewModelProvider.factory),
             navController = rememberNavController()
         )
     }

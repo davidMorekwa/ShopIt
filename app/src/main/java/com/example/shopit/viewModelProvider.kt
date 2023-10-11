@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.ui.viewmodels.CartScreenViewModel
 import com.example.shopit.ui.viewmodels.CheckoutViewModel
+import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
 import com.example.shopit.ui.viewmodels.HomeScreenViewModel
 import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.example.shopit.ui.viewmodels.SearchScreenViewModel
@@ -30,6 +31,9 @@ object viewModelProvider {
         }
         initializer {
             AuthViewModel(shopItApplication().container.authRepository)
+        }
+        initializer {
+            FavoriteScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
         }
     }
 

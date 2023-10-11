@@ -9,9 +9,9 @@ interface RemoteDatabaseRepository {
     suspend fun search(string: String): List<Product>
     suspend fun addProductToCart(product: CartViewUiState)
     suspend fun getProductsInCart():List<CartViewUiState>
-    suspend fun removeProductFromCar(product: CartViewUiState)
+    suspend fun removeProductFromCart(product: CartViewUiState)
     suspend fun filterProductsByCategory(category: String):List<Product>
-    suspend fun addQuantity(productId: String, Quantity: String)
-    suspend fun reduceQuantity(productId: String, Quantity: String)
+    suspend fun changeQuantity(productId: String, quantity: String)
     suspend fun addtoFavorites(productViewUiState: ProductViewUiState)
+    suspend fun getFavorites(): List<ProductViewUiState>
 }

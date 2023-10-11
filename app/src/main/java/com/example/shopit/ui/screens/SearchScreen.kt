@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.shopit.ui.activities.Screens
 import com.example.shopit.data.model.Product
+import com.example.shopit.ui.activities.Screens
 import com.example.shopit.ui.viewmodels.SearchScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    viewModel: SearchScreenViewModel,
+    searchScreenViewModel: SearchScreenViewModel,
     navController: NavController,
     onProductSearchResultClick: (product: Product)->Unit,
     isActive: Int,
@@ -69,8 +69,8 @@ fun SearchScreen(
         mutableStateOf("")
     }
     val scope = rememberCoroutineScope()
-    val uiState = viewModel.searchResult.collectAsState()
-    var isSearch = viewModel.isSearch
+    val uiState = searchScreenViewModel.searchResult.collectAsState()
+    var isSearch = searchScreenViewModel.isSearch
     if (isSearch){
         Scaffold(
             topBar = {
@@ -86,7 +86,7 @@ fun SearchScreen(
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = { viewModel.isSearch = false }) {
+                        IconButton(onClick = { searchScreenViewModel.isSearch = false }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
                         }
                     },
@@ -170,7 +170,7 @@ fun SearchScreen(
                 ),
                 keyboardActions = KeyboardActions(onSearch = {
                     scope.launch {
-                        viewModel.search(searchValue)
+                        searchScreenViewModel.search(searchValue)
                     }
                 }),
                 shape = RoundedCornerShape(15.dp),
