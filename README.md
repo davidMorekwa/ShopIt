@@ -5,12 +5,12 @@ Also utilises Material 3 design principles for a cohesive and visually appealing
 
 
 ## Table of Contents
--[Getting Started](#getting-started)
-    -[Prerequisites](#prerequisites)
-    -[Installation](#installation)
--[Features](#features)
--[Usage](#usage)
--[Screenshots](#screenshots)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+- [Features](#features)
+- [Usage](#usage)
+- [Contributing](#contributing)
 
 
 
@@ -41,8 +41,6 @@ ShopIt offers the following features:
 1. Launch the ShopIt app on your android device
 2. Browse products, search for products, add them to your shopping cart
 3. Proceed to the checkout.
-
-### Screenshots
 
 
 ### Contributing
