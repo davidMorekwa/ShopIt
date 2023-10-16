@@ -2,6 +2,7 @@
 
 ShopIt is an ecommerce mobile application built using jetpack compose and MVVM architecture.
 Also utilises Material 3 design principles for a cohesive and visually appealing experience.
+The app integrates Safaricoms Mpesa Express api to faciliate the payment of goods.
 
 
 ## Table of Contents
@@ -35,7 +36,8 @@ Before you begin the setting up your local environment, please ensure you have t
 ShopIt offers the following features:
 - Product browsing and searching
 - Shopping cart functionality
-- Checkout 
+- Checkout
+- Mpesa payment
 
 ### Usage
 1. Launch the ShopIt app on your android device
