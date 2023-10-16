@@ -56,8 +56,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     }
     suspend fun getAccessToken(): String? {
         var token = try {
-            var response = apiServiceRepository.getOAuthAccessoken()
-            response.body()?.accessToken
+            apiServiceRepository.getOAuthAccessoken()
         } catch (e: Exception){
             println("ACCESS TOKEN EXCEPTION!!!")
             println(e.message)

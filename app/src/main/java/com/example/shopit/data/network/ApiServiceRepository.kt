@@ -1,35 +1,70 @@
 package com.example.shopit.data.network
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.androidstudy.daraja.Daraja
 import com.androidstudy.daraja.callback.DarajaResult
 import com.androidstudy.daraja.util.Environment
-import com.example.shopit.data.model.OAuthResponse
 import com.example.shopit.data.utlis.AppUtils
 import com.example.shopit.data.utlis.Config
-import com.google.gson.Gson
-import retrofit2.Response
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 
 interface ApiServiceRepository {
-    suspend fun getOAuthAccessoken(): Response<OAuthResponse>
+    suspend fun getOAuthAccessoken(): String?
     suspend fun makePayment(phoneNumber: String, amount: String, token: String)
 }
 
-class DefaultApiServiceRepository(private val apiService: DarajaApiService):ApiServiceRepository{
-    val gson = Gson()
-    override suspend fun getOAuthAccessoken(): Response<OAuthResponse> {
-        val response = apiService.getOAuthToken()
-        println("RESPONSE!!")
-        println(response.body()?.accessToken)
-        return response
+private object PreferenceKeys{
+    val ACCESS_TOKEN = stringPreferencesKey("access_token")
+    val EXPIRY = stringPreferencesKey("expiry")
+}
+
+class DefaultApiServiceRepository(
+    private val apiService: DarajaApiService,
+    private val dataStore: DataStore<Preferences>
+):ApiServiceRepository{
+    override suspend fun getOAuthAccessoken(): String? {
+        var currentTime = System.currentTimeMillis()/1000
+        var token_expiry = dataStore.data
+            .map { value: Preferences ->
+                value[PreferenceKeys.EXPIRY]
+            }
+            .first()
+        var token: String? = null
+        if(currentTime > token_expiry?.toLong() ?: 0){
+            println("Token has expired")
+            val response = apiService.getOAuthToken()
+            token = response.body()?.accessToken
+            val expiresIn = response.body()?.expiresIn
+            var currentTime2 = System.currentTimeMillis()/1000
+            var expiryTime = currentTime2.toInt() + (expiresIn?.toInt() ?: 0)
+            dataStore.edit { mutablePreferences: MutablePreferences ->
+                token?.let { mutablePreferences[PreferenceKeys.ACCESS_TOKEN] = it }
+                mutablePreferences[PreferenceKeys.EXPIRY] = expiryTime.toString()
+            }
+        } else {
+            token = dataStore.data
+                .map { value: Preferences ->
+                    value[PreferenceKeys.ACCESS_TOKEN]
+                }
+                .first()
+        }
+
+        return token
     }
 
     override suspend fun makePayment(phoneNumber: String, amount: String, token: String) {
         val daraja = getDaraja()
+        println("MAKE PAYMENT TOKEN: $token")
         val response = daraja.initiatePayment(
-            token ="dHtKoGLgfFpRFpVvYA0WteefVQNL",
+            token = token,
             phoneNumber = phoneNumber,
-            amount = "1",
+            amount = amount,
             accountReference = AppUtils.generateUUID(),
             description = "Purchase of Goods on ShopIt"
         ) { darajaResult ->

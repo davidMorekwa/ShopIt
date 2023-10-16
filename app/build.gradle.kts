@@ -91,5 +91,6 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     implementation("com.androidstudy.daraja:daraja:2.0.2")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
 }
