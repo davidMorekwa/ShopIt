@@ -1,5 +1,7 @@
 package com.example.shopit.data
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.example.shopit.auth.custom.AuthRepository
 import com.example.shopit.auth.custom.AuthRepositoryImpl
 import com.example.shopit.data.network.ApiServiceRepository
@@ -25,7 +27,8 @@ interface AppContainer{
     val authRepository: AuthRepository
 }
 
-class DefaultAppContainer : AppContainer{
+
+class DefaultAppContainer(private val dataStore: DataStore<Preferences>) : AppContainer{
     private val database = Firebase.database
     private val BASE_URL = "https://sandbox.safaricom.co.ke"
     private val auth = FirebaseAuth.getInstance()
@@ -48,7 +51,7 @@ class DefaultAppContainer : AppContainer{
         DefaultDatabaseRepository(database = database)
     }
     override val apiServiceRepository: ApiServiceRepository by lazy {
-        DefaultApiServiceRepository(retrofitService)
+        DefaultApiServiceRepository(retrofitService, dataStore)
     }
     override val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(auth, database)
