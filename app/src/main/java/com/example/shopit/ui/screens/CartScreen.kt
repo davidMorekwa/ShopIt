@@ -134,7 +134,6 @@ fun CartScreen(
                 )
                 Button(
                     onClick = {
-//                        navController.navigate(Screens.CHECKOUT_SCREEN.name)
                         isBottomModalSheetVisible = true
                     }
                 ) {
@@ -166,7 +165,7 @@ fun CartScreen(
                     sheetState = sheetState,
                     onDismissRequest = { isBottomModalSheetVisible = false },
                     modifier = Modifier
-                        .padding(bottom = 30.dp)
+                        .padding(bottom = 30.dp, start = 4.dp, end = 4.dp)
                         .height(720.dp)
                 ) {
                     Column {
@@ -291,6 +290,7 @@ fun CartScreen(
                                     onClick = {
                                         scope.launch {
                                             cartScreenViewModel.checkout("254$phoneNumber")
+                                            isBottomModalSheetVisible = false
                                         }
                                     }
                                 ) {

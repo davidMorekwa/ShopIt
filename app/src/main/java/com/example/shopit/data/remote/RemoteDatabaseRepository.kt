@@ -14,4 +14,5 @@ interface RemoteDatabaseRepository {
     suspend fun changeQuantity(productId: String, quantity: String)
     suspend fun addtoFavorites(productViewUiState: ProductViewUiState)
     suspend fun getFavorites(): List<ProductViewUiState>
+    suspend fun clearCart()
 }
