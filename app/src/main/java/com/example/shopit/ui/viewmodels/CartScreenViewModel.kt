@@ -69,8 +69,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
         viewModelScope.launch(Dispatchers.IO) {
             val token = getAccessToken()
             try {
-                val response = token?.let { apiServiceRepository.makePayment(phoneNumber = phoneNumber, amount = subTotal.value.toInt().toString(), token = it) }
-                println(response)
+                token?.let { apiServiceRepository.makePayment(phoneNumber = phoneNumber, amount = subTotal.value.toInt().toString(), token = it) }
             } catch (e: Exception) {
                 println("Checkout Exception $e")
             }
@@ -86,6 +85,11 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
         viewModelScope.launch(Dispatchers.IO) {
             repository.changeQuantity(productId = productID, quantity = quantity)
             getProductsInCart()
+        }
+    }
+    fun clearCart(){
+        viewModelScope.launch {
+
         }
     }
     override fun onCleared() {

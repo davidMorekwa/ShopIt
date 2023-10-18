@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.shopit.ui.screens.LandingScreen
 import com.example.shopit.ui.screens.LoginScreen
 import com.example.shopit.ui.screens.RegistrationScreen
 import com.example.shopit.ui.theme.ShopItTheme
@@ -59,7 +60,7 @@ fun AuthenticationScreen(
     val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
     NavHost(
         navController = navController,
-        startDestination = Screens.LOGIN_SCREEN.name
+        startDestination = Screens.LANDING_SCREEN.name
     ){
         composable(
             route = Screens.LOGIN_SCREEN.name,
@@ -91,6 +92,20 @@ fun AuthenticationScreen(
                 navController = navController,
                 authViewModel = authViewModel,
                 onSuccessfulRegistration = onSuccessfulRegistration
+            )
+        }
+        composable(
+            route = Screens.LANDING_SCREEN.name,
+            exitTransition = {
+                fadeOut()
+//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+            },
+            enterTransition = {
+                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+            },
+        ){
+            LandingScreen(
+                navController = navController
             )
         }
     }

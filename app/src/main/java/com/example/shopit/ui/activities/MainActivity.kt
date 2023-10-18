@@ -92,6 +92,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 enum class Screens {
+    LANDING_SCREEN,
     HOME_SCREEN,
     PRODUCT_SCREEN,
     SEARCH_SCREEN,

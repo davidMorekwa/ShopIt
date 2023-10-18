@@ -82,8 +82,9 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
         }
     }
     override suspend fun addProductToCart(product: CartViewUiState) {
-        cartRef.child(product.id).setValue(product)
-        cartRef.child(product.id).child("userId").setValue(userId)
+        val id = product.id+userId
+        cartRef.child(id).setValue(product)
+        cartRef.child(id).child("userId").setValue(userId)
         println("Product ${product.title} added to cart document")
     }
     override suspend fun getProductsInCart():List<CartViewUiState> {
@@ -91,6 +92,8 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
         val snapshot = cartRef.get().await()
         for (snap in snapshot.children) {
             if(snap.child("userId").value == userId){
+                println(snap.child("userId"))
+                println("CURRENT USER: $userId")
                 var cartItem = snap.getValue<CartViewUiState>() ?: CartViewUiState()
                 println("Product  retrieved from cart: ${cartItem.title}")
                 cartList.add(cartItem)
@@ -100,7 +103,8 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
         return cartList
     }
     override suspend fun removeProductFromCart(product: CartViewUiState) {
-        cartRef.child(product.id).removeValue()
+        val productId = product.id+userId
+        cartRef.child(productId).removeValue()
     }
     override suspend fun changeQuantity(productId: String, quantity: String) {
         if (quantity.toInt() > 0) {
@@ -128,5 +132,14 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
             }
         }
         return favoriteProductsList
+    }
+
+    override suspend fun clearCart() {
+        val snapshot = cartRef.get().await()
+//        for(snap in snapshot.children){
+//            if (snap.child("userId").value == userId){
+//                snap.
+//            }
+//        }
     }
 }

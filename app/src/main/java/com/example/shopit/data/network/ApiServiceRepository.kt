@@ -65,7 +65,7 @@ class DefaultApiServiceRepository(
             token = token,
             phoneNumber = phoneNumber,
             amount = amount,
-            accountReference = AppUtils.generateUUID(),
+            accountReference = "ShopIt App",
             description = "Purchase of Goods on ShopIt"
         ) { darajaResult ->
             when (darajaResult) {
