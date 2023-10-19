@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
-import com.example.shopit.ui.activities.Screens
 import com.example.shopit.ui.viewmodels.SearchScreenViewModel
 import kotlinx.coroutines.launch
 

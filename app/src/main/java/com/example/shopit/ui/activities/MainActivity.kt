@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.shopit.ui.screens.CartScreen
 import com.example.shopit.ui.screens.HomeScreen
 import com.example.shopit.ui.screens.ProductScreen
+import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.SearchScreen
 import com.example.shopit.ui.theme.ShopItTheme
 import com.example.shopit.ui.viewmodels.AuthViewModel
@@ -67,6 +69,7 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val user = auth.currentUser
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +77,12 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(this, AuthActivity::class.java))
         } else {
             setContent {
-                ShopItTheme {
+                var isaDarkTheme: Boolean by rememberSaveable {
+                    mutableStateOf(false)
+                }
+                ShopItTheme(
+                    useDarkTheme = isaDarkTheme
+                ) {
                     // A surface container using the 'background' color from the theme
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -83,7 +91,12 @@ class MainActivity : ComponentActivity() {
                         ShopItApp(
                             onLogOutClick = {
                                 startActivity(Intent(this, AuthActivity::class.java))
-                            }
+                            },
+                            onToggleSwitch = {
+                                isaDarkTheme = !isaDarkTheme
+                                println("THEME: $isaDarkTheme")
+                            },
+                            useDarkTheme = isaDarkTheme
                         )
                     }
                 }
@@ -91,22 +104,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-enum class Screens {
-    LANDING_SCREEN,
-    HOME_SCREEN,
-    PRODUCT_SCREEN,
-    SEARCH_SCREEN,
-    CART_SCREEN,
-    LOGIN_SCREEN,
-    REGISTRATION_SCREEN,
-    FAVORITES_SCREEN
-}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShopItApp(
-    onLogOutClick: ()->Unit
+    onLogOutClick: ()->Unit,
+    onToggleSwitch: ()->Unit,
+    useDarkTheme: Boolean
 ) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
@@ -163,6 +169,10 @@ fun ShopItApp(
                     authViewModel = authViewModel,
                     onLogOutClick = onLogOutClick,
                     favoriteScreenViewModel = favoriteScreenViewModel,
+                    onSwitchToggle = {
+                        onToggleSwitch()
+                    },
+                    isDarkTheme = useDarkTheme
                 )
             }
             composable(
@@ -223,26 +233,6 @@ fun ShopItApp(
                     navController = navController
                 )
             }
-//            composable(
-//                route = Screens.FAVORITES_SCREEN.name,
-//                exitTransition = {
-//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                },
-//                enterTransition = {
-//                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                },
-//                popEnterTransition = {
-//                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                }
-//            ){
-//                FavoritesScreen(
-//                    favoriteScreenViewModel = favoriteScreenViewModel,
-//                    navController = navController,
-//                    onFavoriteProductClick = {
-//
-//                    }
-//                )
-//            }
 
         }
     }
@@ -380,8 +370,8 @@ fun BottomAppBar(
 @Composable
 fun GreetingPreview() {
     ShopItTheme {
-        ShopItApp(
-            onLogOutClick = {}
-        )
+//        ShopItApp(
+//            onLogOutClick = {}
+//        )
     }
 }

@@ -1,9 +1,14 @@
 package com.example.shopit.ui.viewmodels
 
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
+import com.example.shopit.data.network.PreferenceKeys
 import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.HomeUiState
 import com.example.shopit.ui.uiStates.ProductViewUiState
@@ -14,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 
-class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):ViewModel() {
+class HomeScreenViewModel(private val repository: RemoteDatabaseRepository, private val dataStore: DataStore<Preferences>):ViewModel() {
     private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
         private set
     var homeUiState = _homeUiState.asStateFlow()
@@ -29,6 +34,15 @@ class HomeScreenViewModel(private val repository: RemoteDatabaseRepository):View
     init {
         println("Getting products")
         getInitialProducts()
+    }
+
+    fun changeTheme(status: Boolean){
+        viewModelScope.launch {
+            dataStore.edit { mutablePreferences: MutablePreferences ->
+                mutablePreferences[PreferenceKeys.USE_DARK_THEME] = status
+            }
+        }
+
     }
     fun getCategories(homeUiState: HomeUiState): List<String>{
         var tempCategoryList: MutableList<String> = mutableListOf("All")

@@ -46,6 +46,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -72,7 +73,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
-import com.example.shopit.ui.activities.Screens
 import com.example.shopit.ui.uiStates.HomeUiState
 import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.ui.viewmodels.CartScreenViewModel
@@ -94,6 +94,8 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
     isActive: Int,
+    isDarkTheme: Boolean,
+    onSwitchToggle: ()-> Unit,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -102,6 +104,9 @@ fun HomeScreen(
     var uiState = homeScreenViewModel.homeUiState.collectAsState()
     var categories = homeScreenViewModel.categoryList.collectAsState()
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
+    var useDarkTheme: Boolean by rememberSaveable {
+        mutableStateOf(isDarkTheme)
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -187,15 +192,27 @@ fun HomeScreen(
                                 .padding(vertical = 8.dp)
                         )
                     }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "Dark Theme")
+                        Switch(
+                            checked = useDarkTheme,
+                            onCheckedChange = {
+                                useDarkTheme = it
+                                onSwitchToggle()
+                            }
+                        )
+                    }
+
                 }
             },
             content = {
-                if (selectedItem.value == 3){
-                    FavoritesScreen(
-                        favoriteScreenViewModel = favoriteScreenViewModel,
-                        navController = navController,
-                    )
-                } else if(selectedItem.value == 1) {
+                if(selectedItem.value == 1) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -233,6 +250,11 @@ fun HomeScreen(
                         }
 
                     }
+                } else if (selectedItem.value == 3) {
+                    FavoritesScreen(
+                        favoriteScreenViewModel = favoriteScreenViewModel,
+                        navController = navController,
+                    )
                 }
             }
         )
@@ -280,8 +302,7 @@ fun SuccessScreen(
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -353,14 +374,15 @@ fun ProductItem(
     var elevation by remember {
         mutableStateOf(0.dp)
     }
+    var insteractionSource = remember {
+        MutableInteractionSource()
+    }
     if(isSystemInDarkTheme()){
         elevation = 3.dp
     } else {
         elevation = 1.dp
     }
-    var isAddedToCart by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var isAddedToCart = insteractionSource.collectIsPressedAsState().value
     var cartIcon = if (isAddedToCart){
         Icons.Filled.ShoppingCart
     } else {
@@ -404,7 +426,7 @@ fun ProductItem(
                     text = product.title.toString(),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 15.sp,
+                    fontSize = 12.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2,
                 )
@@ -414,18 +436,29 @@ fun ProductItem(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Text(
-                        text = "$${product.price.toString()}" ,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 18.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Ksh." ,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 10.sp
+                        )
+                        Text(
+                            text = "${product.price.toString()}",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 16.sp
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             onAddToCartClick(product)
-                            isAddedToCart = !isAddedToCart
                             Toast.makeText(context, "Added to Cart!", Toast.LENGTH_SHORT).show()
-                        }
+                        },
+                        interactionSource = insteractionSource
+//                        contentPadding = PaddingValues(0.dp),
                     ) {
                         Icon(
                             imageVector = cartIcon,

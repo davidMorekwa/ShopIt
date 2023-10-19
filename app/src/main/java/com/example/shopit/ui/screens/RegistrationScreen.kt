@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.shopit.ui.activities.Screens
 import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch

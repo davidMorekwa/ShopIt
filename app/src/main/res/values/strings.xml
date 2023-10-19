@@ -3,4 +3,6 @@
     <string name="your_web_client_id">776471407800-qv10983791simn7qdjs50o9h48ll2lpu.apps.googleusercontent.com</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_activity_auth">AuthActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
