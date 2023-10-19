@@ -56,7 +56,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -94,8 +93,6 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
     isActive: Int,
-    isDarkTheme: Boolean,
-    onSwitchToggle: ()-> Unit,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -104,9 +101,7 @@ fun HomeScreen(
     var uiState = homeScreenViewModel.homeUiState.collectAsState()
     var categories = homeScreenViewModel.categoryList.collectAsState()
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
-    var useDarkTheme: Boolean by rememberSaveable {
-        mutableStateOf(isDarkTheme)
-    }
+    var themeUiState = homeScreenViewModel.toggleSwitchState.collectAsState()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -201,10 +196,9 @@ fun HomeScreen(
                     ) {
                         Text(text = "Dark Theme")
                         Switch(
-                            checked = useDarkTheme,
+                            checked = themeUiState.value,
                             onCheckedChange = {
-                                useDarkTheme = it
-                                onSwitchToggle()
+                                homeScreenViewModel.changeTheme(it)
                             }
                         )
                     }

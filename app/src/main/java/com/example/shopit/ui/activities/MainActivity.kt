@@ -38,10 +38,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,7 +69,6 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val user = auth.currentUser
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,13 +76,11 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(this, AuthActivity::class.java))
         } else {
             setContent {
-                var isaDarkTheme: Boolean by rememberSaveable {
-                    mutableStateOf(false)
-                }
+                val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
+                var theme = homeScreenViewModel.toggleSwitchState.collectAsState()
                 ShopItTheme(
-                    useDarkTheme = isaDarkTheme
+                    useDarkTheme = theme.value
                 ) {
-                    // A surface container using the 'background' color from the theme
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -92,11 +89,7 @@ class MainActivity : ComponentActivity() {
                             onLogOutClick = {
                                 startActivity(Intent(this, AuthActivity::class.java))
                             },
-                            onToggleSwitch = {
-                                isaDarkTheme = !isaDarkTheme
-                                println("THEME: $isaDarkTheme")
-                            },
-                            useDarkTheme = isaDarkTheme
+                            homeScreenViewModel = homeScreenViewModel
                         )
                     }
                 }
@@ -111,15 +104,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShopItApp(
     onLogOutClick: ()->Unit,
-    onToggleSwitch: ()->Unit,
-    useDarkTheme: Boolean
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     var isActive by remember {
         mutableStateOf(1)
     }
-    val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val productScreenViewModel: ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel(factory = viewModelProvider.factory)
@@ -169,10 +160,6 @@ fun ShopItApp(
                     authViewModel = authViewModel,
                     onLogOutClick = onLogOutClick,
                     favoriteScreenViewModel = favoriteScreenViewModel,
-                    onSwitchToggle = {
-                        onToggleSwitch()
-                    },
-                    isDarkTheme = useDarkTheme
                 )
             }
             composable(

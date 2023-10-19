@@ -14,6 +14,8 @@ import com.example.shopit.ui.uiStates.HomeUiState
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -30,14 +32,26 @@ class HomeScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     val productUiState = _productUiState.asStateFlow()
     private var _categoryList: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
     val categoryList = _categoryList.asStateFlow()
+    private var _toggleSwitchState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val toggleSwitchState = _toggleSwitchState.asStateFlow()
 
     init {
+        getTheme()
         println("Getting products")
         getInitialProducts()
+
     }
 
+    fun getTheme() {
+        viewModelScope.launch {
+            _toggleSwitchState.value = dataStore.data
+                .map { value: Preferences -> value[PreferenceKeys.USE_DARK_THEME] ?: false }
+                .first()
+        }
+    }
     fun changeTheme(status: Boolean){
         viewModelScope.launch {
+            _toggleSwitchState.value = status
             dataStore.edit { mutablePreferences: MutablePreferences ->
                 mutablePreferences[PreferenceKeys.USE_DARK_THEME] = status
             }
