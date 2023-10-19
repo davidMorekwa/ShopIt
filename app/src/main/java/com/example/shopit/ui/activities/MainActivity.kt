@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.shopit.ui.screens.CartScreen
 import com.example.shopit.ui.screens.HomeScreen
 import com.example.shopit.ui.screens.ProductScreen
+import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.SearchScreen
 import com.example.shopit.ui.theme.ShopItTheme
 import com.example.shopit.ui.viewmodels.AuthViewModel
@@ -74,8 +76,11 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(this, AuthActivity::class.java))
         } else {
             setContent {
-                ShopItTheme {
-                    // A surface container using the 'background' color from the theme
+                val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
+                var theme = homeScreenViewModel.toggleSwitchState.collectAsState()
+                ShopItTheme(
+                    useDarkTheme = theme.value
+                ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -83,7 +88,8 @@ class MainActivity : ComponentActivity() {
                         ShopItApp(
                             onLogOutClick = {
                                 startActivity(Intent(this, AuthActivity::class.java))
-                            }
+                            },
+                            homeScreenViewModel = homeScreenViewModel
                         )
                     }
                 }
@@ -91,29 +97,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-enum class Screens {
-    LANDING_SCREEN,
-    HOME_SCREEN,
-    PRODUCT_SCREEN,
-    SEARCH_SCREEN,
-    CART_SCREEN,
-    LOGIN_SCREEN,
-    REGISTRATION_SCREEN,
-    FAVORITES_SCREEN
-}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShopItApp(
-    onLogOutClick: ()->Unit
+    onLogOutClick: ()->Unit,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     var isActive by remember {
         mutableStateOf(1)
     }
-    val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val productScreenViewModel: ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel(factory = viewModelProvider.factory)
@@ -223,26 +220,6 @@ fun ShopItApp(
                     navController = navController
                 )
             }
-//            composable(
-//                route = Screens.FAVORITES_SCREEN.name,
-//                exitTransition = {
-//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                },
-//                enterTransition = {
-//                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                },
-//                popEnterTransition = {
-//                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                }
-//            ){
-//                FavoritesScreen(
-//                    favoriteScreenViewModel = favoriteScreenViewModel,
-//                    navController = navController,
-//                    onFavoriteProductClick = {
-//
-//                    }
-//                )
-//            }
 
         }
     }
@@ -380,8 +357,8 @@ fun BottomAppBar(
 @Composable
 fun GreetingPreview() {
     ShopItTheme {
-        ShopItApp(
-            onLogOutClick = {}
-        )
+//        ShopItApp(
+//            onLogOutClick = {}
+//        )
     }
 }

@@ -11,11 +11,12 @@ import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
 import com.example.shopit.ui.viewmodels.HomeScreenViewModel
 import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.example.shopit.ui.viewmodels.SearchScreenViewModel
+import com.example.shopit.ui.viewmodels.SettingsScreenViewModel
 
 object viewModelProvider {
     val factory = viewModelFactory {
         initializer {
-            HomeScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
+            HomeScreenViewModel(shopItApplication().container.remoteDatabaseRepository, shopItApplication().container.dataStoreInstance)
         }
         initializer {
             ProductScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
@@ -34,6 +35,9 @@ object viewModelProvider {
         }
         initializer {
             FavoriteScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
+        }
+        initializer {
+            SettingsScreenViewModel(shopItApplication().container.dataStoreInstance)
         }
     }
 

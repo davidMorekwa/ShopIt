@@ -3,6 +3,7 @@ package com.example.shopit.data.network
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.androidstudy.daraja.Daraja
@@ -19,9 +20,10 @@ interface ApiServiceRepository {
     suspend fun makePayment(phoneNumber: String, amount: String, token: String)
 }
 
-private object PreferenceKeys{
+object PreferenceKeys{
     val ACCESS_TOKEN = stringPreferencesKey("access_token")
     val EXPIRY = stringPreferencesKey("expiry")
+    val USE_DARK_THEME = booleanPreferencesKey("use_dark_theme")
 }
 
 class DefaultApiServiceRepository(

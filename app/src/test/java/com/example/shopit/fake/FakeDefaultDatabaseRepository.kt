@@ -3,6 +3,7 @@ package com.example.shopit.fake
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.CartViewUiState
+import com.example.shopit.ui.uiStates.ProductViewUiState
 
 class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
     override suspend fun getInitialProducts(): List<Product> {
@@ -21,7 +22,7 @@ class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun removeProductFromCar(product: CartViewUiState) {
+    override suspend fun removeProductFromCart(product: CartViewUiState) {
         TODO("Not yet implemented")
     }
 
@@ -30,14 +31,19 @@ class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
             .filter { product: Product -> product.primary_category == category }
     }
 
-    override suspend fun addQuantity(productId: String, Quantity: String){
-        val prod = FakeDataSource.cart.filter { product: CartViewUiState -> product.id == productId }.first()
-        println("Initial quantity = ${prod.quantity}")
-        prod.quantity = "2"
-        println("Qty after: ${prod.quantity}")
+    override suspend fun changeQuantity(productId: String, quantity: String) {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun reduceQuantity(productId: String, Quantity: String) {
+    override suspend fun addtoFavorites(productViewUiState: ProductViewUiState) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getFavorites(): List<ProductViewUiState> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun clearCart() {
         TODO("Not yet implemented")
     }
 }

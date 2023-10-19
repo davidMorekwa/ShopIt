@@ -22,6 +22,7 @@ interface AppContainer{
     val remoteDatabaseRepository: RemoteDatabaseRepository
     val apiServiceRepository: ApiServiceRepository
     val authRepository: AuthRepository
+    val dataStoreInstance: DataStore<Preferences>
 }
 
 
@@ -50,4 +51,6 @@ class DefaultAppContainer(private val dataStore: DataStore<Preferences>) : AppCo
     override val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(auth, database)
     }
+    override val dataStoreInstance: DataStore<Preferences>
+        get() = dataStore
 }
