@@ -2,8 +2,8 @@ package com.example.shopit.fake
 
 import com.example.shopit.data.model.Product
 import com.example.shopit.rules.TestDispatcherRule
-import com.example.shopit.ui.viewmodels.HomeScreenViewModel
-import com.example.shopit.ui.uiStates.HomeUiState
+import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
+import com.example.shopit.ui.screens.homescreen.HomeUiState
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before

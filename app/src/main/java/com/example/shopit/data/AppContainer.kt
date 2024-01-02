@@ -1,14 +1,19 @@
 package com.example.shopit.data
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.shopit.auth.custom.AuthRepository
 import com.example.shopit.auth.custom.AuthRepositoryImpl
-import com.example.shopit.data.network.ApiServiceRepository
-import com.example.shopit.data.network.DarajaApiService
-import com.example.shopit.data.network.DefaultApiServiceRepository
-import com.example.shopit.data.remote.DefaultDatabaseRepository
-import com.example.shopit.data.remote.RemoteDatabaseRepository
+import com.example.shopit.data.local.DefaultLocalDatabaseRepository
+import com.example.shopit.data.local.LocalDatabaseRepository
+import com.example.shopit.data.local.ShopitDatabase
+import com.example.shopit.data.remote.darajaApi.ApiServiceRepository
+import com.example.shopit.data.remote.darajaApi.DarajaApiService
+import com.example.shopit.data.remote.darajaApi.DefaultApiServiceRepository
+import com.example.shopit.data.remote.repository.DefaultDatabaseRepository
+import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -23,10 +28,13 @@ interface AppContainer{
     val apiServiceRepository: ApiServiceRepository
     val authRepository: AuthRepository
     val dataStoreInstance: DataStore<Preferences>
+    val localDatabaseRepository: LocalDatabaseRepository
 }
+private const val TOKEN_PREFERENCE_NAME = "token_preference"
 
-
-class DefaultAppContainer(private val dataStore: DataStore<Preferences>) : AppContainer{
+class DefaultAppContainer(
+    context: Context,
+) : AppContainer{
     private val database = Firebase.database
     private val BASE_URL = "https://sandbox.safaricom.co.ke"
     private val auth = FirebaseAuth.getInstance()
@@ -45,12 +53,19 @@ class DefaultAppContainer(private val dataStore: DataStore<Preferences>) : AppCo
     override val remoteDatabaseRepository: RemoteDatabaseRepository by lazy {
         DefaultDatabaseRepository(database = database)
     }
+    private val Context.dataStore by preferencesDataStore(
+        name = TOKEN_PREFERENCE_NAME
+    )
     override val apiServiceRepository: ApiServiceRepository by lazy {
-        DefaultApiServiceRepository(retrofitService, dataStore)
+        DefaultApiServiceRepository(retrofitService, context.dataStore)
     }
     override val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(auth, database)
     }
-    override val dataStoreInstance: DataStore<Preferences>
-        get() = dataStore
+    override val dataStoreInstance: DataStore<Preferences> by lazy {
+        context.dataStore
+    }
+    override val localDatabaseRepository: LocalDatabaseRepository by lazy {
+        DefaultLocalDatabaseRepository(ShopitDatabase.getDatabase(context = context).productsDao())
+    }
 }

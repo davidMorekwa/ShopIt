@@ -7,11 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.EaseInOutQuart
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,20 +44,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.shopit.ui.screens.CartScreen
-import com.example.shopit.ui.screens.HomeScreen
-import com.example.shopit.ui.screens.ProductScreen
+import com.example.shopit.data.network.ConnectivityObserver
+import com.example.shopit.data.network.NetworkConnectivityObserver
+import com.example.shopit.ui.naivigation.NavGraph
 import com.example.shopit.ui.screens.Screens
-import com.example.shopit.ui.screens.SearchScreen
+import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
+import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
 import com.example.shopit.ui.theme.ShopItTheme
-import com.example.shopit.ui.viewmodels.AuthViewModel
-import com.example.shopit.ui.viewmodels.CartScreenViewModel
-import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
-import com.example.shopit.ui.viewmodels.HomeScreenViewModel
-import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.example.shopit.viewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 
@@ -78,6 +67,7 @@ class MainActivity : ComponentActivity() {
             setContent {
                 val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
                 var theme = homeScreenViewModel.toggleSwitchState.collectAsState()
+                val connectivityObserver = NetworkConnectivityObserver(applicationContext)
                 ShopItTheme(
                     useDarkTheme = theme.value
                 ) {
@@ -89,7 +79,8 @@ class MainActivity : ComponentActivity() {
                             onLogOutClick = {
                                 startActivity(Intent(this, AuthActivity::class.java))
                             },
-                            homeScreenViewModel = homeScreenViewModel
+                            homeScreenViewModel = homeScreenViewModel,
+                            connectivityObserver = connectivityObserver
                         )
                     }
                 }
@@ -104,126 +95,43 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShopItApp(
     onLogOutClick: ()->Unit,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    connectivityObserver: ConnectivityObserver
 ) {
-    val auth = FirebaseAuth.getInstance()
-    val user = auth.currentUser
     var isActive by remember {
         mutableStateOf(1)
     }
-    val productScreenViewModel: ProductScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
-    val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel(factory = viewModelProvider.factory)
-    val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { BottomAppBar(
-            onHomeClicked = {
-                navController.navigate(Screens.HOME_SCREEN.name)
-                isActive = 1
-                            },
-            onSearchClick = {
-                navController.navigate(Screens.SEARCH_SCREEN.name)
-                isActive = 2
-                            },
-            onCartClick = {
-                navController.navigate(Screens.CART_SCREEN.name)
-                cartScreenViewModel.getProductsInCart()
-                isActive = 3
-            },
-            isActive = isActive
-        )}
-    ) {
-        NavHost(
-            navController = navController,
-            startDestination = Screens.HOME_SCREEN.name
-        ){
-
-            composable(
-                route = Screens.HOME_SCREEN.name,
-                exitTransition = {
-                    fadeOut()
-//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+        bottomBar = {
+            BottomAppBar(
+                onHomeClicked = {
+                    navController.navigate(Screens.HOME_SCREEN.name)
+                    isActive = 1
                 },
-                enterTransition = {
-                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                onSearchClick = {
+                    navController.navigate(Screens.SEARCH_SCREEN.name)
+                    isActive = 2
                 },
-                popEnterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                }
-            ){
-                HomeScreen(
-                    homeScreenViewModel = homeScreenViewModel,
-                    navController = navController,
-                    isActive = isActive,
-                    cartScreenViewModel = cartScreenViewModel,
-                    authViewModel = authViewModel,
-                    onLogOutClick = onLogOutClick,
-                    favoriteScreenViewModel = favoriteScreenViewModel,
-                )
-            }
-            composable(
-                route = Screens.PRODUCT_SCREEN.name,
-                exitTransition = {
-                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+                onCartClick = {
+                    navController.navigate(Screens.CART_SCREEN.name)
+                    cartScreenViewModel.getProductsInCart()
+                    isActive = 3
                 },
-                enterTransition = {
-                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-//                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                },
-                popEnterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                }
-            ){
-                ProductScreen(
-                    navController = navController,
-                    cartScreenViewModel = cartScreenViewModel,
-                    productScreenViewModel = productScreenViewModel,
-                    homeScreenViewModel = homeScreenViewModel
-                )
-            }
-            composable(
-                route = Screens.SEARCH_SCREEN.name,
-                exitTransition = {
-                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                },
-                enterTransition = {
-                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                },
-                popEnterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                }
-            ){
-                SearchScreen(
-                    searchScreenViewModel = viewModel(factory = viewModelProvider.factory),
-                    navController = navController,
-                    isActive = isActive,
-                    onProductSearchResultClick = {
-                        homeScreenViewModel.updateProductUiState(it)
-                    }
-                )
-            }
-            composable(
-                route = Screens.CART_SCREEN.name,
-                exitTransition = {
-                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                },
-                enterTransition = {
-                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                },
-                popEnterTransition = {
-                    slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
-                }
-            ){
-                CartScreen(
-                    cartScreenViewModel = cartScreenViewModel,
-                    navController = navController
-                )
-            }
-
+                isActive = isActive
+            )
         }
+    ) {
+        NavGraph(
+            navController = navController,
+            homeScreenViewModel = homeScreenViewModel,
+            isActive = isActive,
+            onLogOutClick = onLogOutClick,
+            connectivityObserver = connectivityObserver,
+            cartScreenViewModel = cartScreenViewModel
+        )
     }
-
 }
 @Composable
 fun BottomAppBar(

@@ -1,7 +1,7 @@
 package com.example.shopit.fake
 
 import com.example.shopit.data.model.Product
-import com.example.shopit.ui.uiStates.CartViewUiState
+import com.example.shopit.ui.screens.cartscreen.CartViewUiState
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

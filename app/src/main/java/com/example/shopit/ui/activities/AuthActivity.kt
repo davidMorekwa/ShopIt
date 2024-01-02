@@ -19,11 +19,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shopit.ui.screens.LandingScreen
-import com.example.shopit.ui.screens.LoginScreen
-import com.example.shopit.ui.screens.RegistrationScreen
 import com.example.shopit.ui.screens.Screens
+import com.example.shopit.ui.screens.authscreens.AuthViewModel
+import com.example.shopit.ui.screens.authscreens.LoginScreen
+import com.example.shopit.ui.screens.authscreens.RegistrationScreen
 import com.example.shopit.ui.theme.ShopItTheme
-import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.viewModelProvider
 
 class AuthActivity : ComponentActivity() {
