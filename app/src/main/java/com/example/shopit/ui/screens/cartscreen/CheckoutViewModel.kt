@@ -1,4 +1,4 @@
-package com.example.shopit.ui.viewmodels
+package com.example.shopit.ui.screens.cartscreen
 
 import androidx.lifecycle.ViewModel
 import com.example.shopit.data.remote.repository.RemoteDatabaseRepository

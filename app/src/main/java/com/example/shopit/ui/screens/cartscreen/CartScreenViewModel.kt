@@ -1,4 +1,4 @@
-package com.example.shopit.ui.viewmodels
+package com.example.shopit.ui.screens.cartscreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -7,8 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.remote.darajaApi.ApiServiceRepository
 import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
-import com.example.shopit.ui.uiStates.CartViewUiState
-import com.example.shopit.ui.uiStates.ProductViewUiState
+import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +23,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     var cartViewUiState = _cartScreenUiState.asStateFlow()
     var subTotal = _subTotal.asStateFlow()
     fun addProductToCart(product : Product){
-        val cartProduct:CartViewUiState = this.toCartView(product)
+        val cartProduct: CartViewUiState = this.toCartView(product)
         println("PRODUCT ${cartProduct.id} ADDED TO CART: Quantity = ${cartProduct.quantity}")
         viewModelScope.launch(Dispatchers.IO) {
             repository.addProductToCart(cartProduct)
@@ -98,7 +97,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
         super.onCleared()
     }
 }
-fun CartScreenViewModel.toCartView(product: Product): CartViewUiState{
+fun CartScreenViewModel.toCartView(product: Product): CartViewUiState {
     return CartViewUiState(
         id = product._id.toString(),
         title = product.title.toString(),

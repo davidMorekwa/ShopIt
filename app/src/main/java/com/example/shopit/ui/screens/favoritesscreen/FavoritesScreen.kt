@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.screens.favoritesscreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.shopit.ui.uiStates.ProductViewUiState
-import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
-import com.example.shopit.ui.viewmodels.ProductScreenViewModel
+import com.example.shopit.ui.screens.Screens
+import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
+import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

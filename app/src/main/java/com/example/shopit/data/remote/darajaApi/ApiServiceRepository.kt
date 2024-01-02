@@ -1,4 +1,4 @@
-package com.example.shopit.data.network
+package com.example.shopit.data.remote.darajaApi
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
@@ -29,7 +29,7 @@ object PreferenceKeys{
 class DefaultApiServiceRepository(
     private val apiService: DarajaApiService,
     private val dataStore: DataStore<Preferences>
-):ApiServiceRepository{
+): ApiServiceRepository {
     override suspend fun getOAuthAccessoken(): String? {
         var currentTime = System.currentTimeMillis()/1000
         var token_expiry = dataStore.data

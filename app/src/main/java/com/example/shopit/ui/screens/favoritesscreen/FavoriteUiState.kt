@@ -1,4 +1,4 @@
-package com.example.shopit.ui.uiStates
+package com.example.shopit.ui.screens.favoritesscreen
 
 data class FavoriteUiState(
     val id: String = "",

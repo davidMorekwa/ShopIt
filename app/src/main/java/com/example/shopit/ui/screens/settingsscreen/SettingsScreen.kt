@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.screens.settingsscreen
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.shopit.ui.viewmodels
+package com.example.shopit.ui.screens.homescreen
 
 import android.content.Context
 import android.util.Log
@@ -8,9 +8,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shopit.data.local.LocalDatabaseRepository
+import com.example.shopit.data.model.Product
 import com.example.shopit.data.remote.darajaApi.PreferenceKeys
 import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
-import com.example.shopit.ui.uiStates.HomeUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +24,7 @@ import java.io.IOException
 class HomeScreenViewModel(
     private val repository: RemoteDatabaseRepository,
     private val dataStore: DataStore<Preferences>,
+    private val localDatabaseRepository: LocalDatabaseRepository,
     private val context: Context
 ):ViewModel() {
     private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
@@ -33,12 +35,9 @@ class HomeScreenViewModel(
     private var _toggleSwitchState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val toggleSwitchState = _toggleSwitchState.asStateFlow()
 
-
-
     init {
         getTheme()
         println("Getting products")
-//        getInitialProducts()
     }
 
     private fun getTheme() {
@@ -76,6 +75,7 @@ class HomeScreenViewModel(
             try{
                 var products = repository.getInitialProducts()
                 println("PRODUCTS ${products.size}")
+//                storeLocally(products)
                 _homeUiState.value = HomeUiState.Success(products.shuffled())
 
             } catch (e: IOException){
@@ -83,6 +83,11 @@ class HomeScreenViewModel(
                 _homeUiState.value = HomeUiState.Error
             }
             _categoryList.value = getCategories(_homeUiState.value)
+        }
+    }
+    fun storeLocally(productList: List<Product>){
+        viewModelScope.launch {
+            localDatabaseRepository.upsertProducts(productList)
         }
     }
     fun filterProductsByCategory(category: String){

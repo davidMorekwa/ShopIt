@@ -1,9 +1,8 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.screens.productscreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,17 +55,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
-import com.example.shopit.ui.uiStates.ProductViewUiState
-import com.example.shopit.ui.viewmodels.CartScreenViewModel
-import com.example.shopit.ui.viewmodels.HomeScreenViewModel
-import com.example.shopit.ui.viewmodels.ProductScreenViewModel
-import com.example.shopit.ui.viewmodels.toProduct
-import com.example.shopit.viewModelProvider
-import kotlinx.coroutines.flow.StateFlow
+import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
+import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
+import com.example.shopit.ui.screens.cartscreen.toProduct
 import kotlin.math.absoluteValue
 
 

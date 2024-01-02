@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.screens.cartscreen
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -64,8 +64,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.shopit.R
-import com.example.shopit.ui.uiStates.CartViewUiState
-import com.example.shopit.ui.viewmodels.CartScreenViewModel
 import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat

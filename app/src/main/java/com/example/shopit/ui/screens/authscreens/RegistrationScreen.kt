@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.screens.authscreens
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.shopit.ui.viewmodels.AuthViewModel
+import com.example.shopit.ui.screens.Screens
 import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 

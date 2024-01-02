@@ -1,9 +1,9 @@
 package com.example.shopit.fake
 
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.remote.RemoteDatabaseRepository
-import com.example.shopit.ui.uiStates.CartViewUiState
-import com.example.shopit.ui.uiStates.ProductViewUiState
+import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
+import com.example.shopit.ui.screens.cartscreen.CartViewUiState
+import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 
 class FakeDefaultDatabaseRepository: RemoteDatabaseRepository {
     override suspend fun getInitialProducts(): List<Product> {

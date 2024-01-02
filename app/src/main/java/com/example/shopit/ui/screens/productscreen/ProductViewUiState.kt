@@ -1,4 +1,4 @@
-package com.example.shopit.ui.uiStates
+package com.example.shopit.ui.screens.productscreen
 
 data class ProductViewUiState(
     val _id: String? = "",

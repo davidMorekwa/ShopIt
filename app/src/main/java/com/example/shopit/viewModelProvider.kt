@@ -4,19 +4,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.shopit.ui.viewmodels.AuthViewModel
-import com.example.shopit.ui.viewmodels.CartScreenViewModel
-import com.example.shopit.ui.viewmodels.CheckoutViewModel
-import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
-import com.example.shopit.ui.viewmodels.HomeScreenViewModel
-import com.example.shopit.ui.viewmodels.ProductScreenViewModel
-import com.example.shopit.ui.viewmodels.SearchScreenViewModel
-import com.example.shopit.ui.viewmodels.SettingsScreenViewModel
+import com.example.shopit.ui.screens.authscreens.AuthViewModel
+import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
+import com.example.shopit.ui.screens.cartscreen.CheckoutViewModel
+import com.example.shopit.ui.screens.favoritesscreen.FavoriteScreenViewModel
+import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
+import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
+import com.example.shopit.ui.screens.searchscreen.SearchScreenViewModel
+import com.example.shopit.ui.screens.settingsscreen.SettingsScreenViewModel
 
 object viewModelProvider {
     val factory = viewModelFactory {
         initializer {
-            HomeScreenViewModel(shopItApplication().container.remoteDatabaseRepository, shopItApplication().container.dataStoreInstance)
+            HomeScreenViewModel(
+                repository = shopItApplication().container.remoteDatabaseRepository,
+                dataStore = shopItApplication().container.dataStoreInstance,
+                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
+                context = shopItApplication().applicationContext
+            )
         }
         initializer {
             ProductScreenViewModel(shopItApplication().container.remoteDatabaseRepository)

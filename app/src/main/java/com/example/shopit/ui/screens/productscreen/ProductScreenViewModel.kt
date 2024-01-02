@@ -1,9 +1,8 @@
-package com.example.shopit.ui.viewmodels
+package com.example.shopit.ui.screens.productscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
-import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

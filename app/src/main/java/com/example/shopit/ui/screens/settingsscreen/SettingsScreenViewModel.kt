@@ -1,4 +1,4 @@
-package com.example.shopit.ui.viewmodels
+package com.example.shopit.ui.screens.settingsscreen
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -10,7 +10,4 @@ class SettingsScreenViewModel(private val dataStore: DataStore<Preferences>): Vi
     var isDarkTheme:MutableStateFlow<Boolean> = MutableStateFlow(false)
     val _isDarkTheme = isDarkTheme.asStateFlow()
 
-    fun changeTheme(isDarkTheme: Boolean){
-
-    }
 }

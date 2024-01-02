@@ -1,4 +1,4 @@
-package com.example.shopit.data.network
+package com.example.shopit.data.remote.darajaApi
 
 import com.example.shopit.data.model.OAuthResponse
 import retrofit2.Response

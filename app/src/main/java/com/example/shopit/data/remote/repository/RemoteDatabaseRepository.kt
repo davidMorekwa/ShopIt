@@ -1,8 +1,8 @@
-package com.example.shopit.data.remote
+package com.example.shopit.data.remote.repository
 
 import com.example.shopit.data.model.Product
-import com.example.shopit.ui.uiStates.CartViewUiState
-import com.example.shopit.ui.uiStates.ProductViewUiState
+import com.example.shopit.ui.screens.cartscreen.CartViewUiState
+import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteDatabaseRepository {

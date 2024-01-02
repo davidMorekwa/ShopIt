@@ -1,4 +1,4 @@
-package com.example.shopit.ui.screens
+package com.example.shopit.ui.screens.homescreen
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -81,12 +81,12 @@ import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.network.ConnectivityObserver
-import com.example.shopit.ui.uiStates.HomeUiState
-import com.example.shopit.ui.viewmodels.AuthViewModel
-import com.example.shopit.ui.viewmodels.CartScreenViewModel
-import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
-import com.example.shopit.ui.viewmodels.HomeScreenViewModel
-import com.example.shopit.ui.viewmodels.ProductScreenViewModel
+import com.example.shopit.ui.screens.Screens
+import com.example.shopit.ui.screens.authscreens.AuthViewModel
+import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
+import com.example.shopit.ui.screens.favoritesscreen.FavoriteScreenViewModel
+import com.example.shopit.ui.screens.favoritesscreen.FavoritesScreen
+import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch

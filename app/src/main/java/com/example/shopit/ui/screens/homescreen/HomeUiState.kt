@@ -1,4 +1,4 @@
-package com.example.shopit.ui.uiStates
+package com.example.shopit.ui.screens.homescreen
 
 import com.example.shopit.data.model.Product
 

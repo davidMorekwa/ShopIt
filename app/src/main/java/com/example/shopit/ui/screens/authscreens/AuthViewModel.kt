@@ -1,4 +1,4 @@
-package com.example.shopit.ui.viewmodels
+package com.example.shopit.ui.screens.authscreens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
