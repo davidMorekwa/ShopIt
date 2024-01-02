@@ -2,7 +2,7 @@ package com.example.shopit.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shopit.data.remote.RemoteDatabaseRepository
+import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,10 +13,6 @@ class FavoriteScreenViewModel(private val repository: RemoteDatabaseRepository):
     private var _favoriteProducts: MutableStateFlow<List<ProductViewUiState>> = MutableStateFlow(listOf())
     var favoriteProducts = _favoriteProducts.asStateFlow()
 
-    init {
-        getFavoriteProducts()
-    }
-
     fun getFavoriteProducts(){
         viewModelScope.launch(Dispatchers.IO) {
             _favoriteProducts.value = try {
@@ -25,6 +21,12 @@ class FavoriteScreenViewModel(private val repository: RemoteDatabaseRepository):
                 println("An error occurred when trying to get favorite products")
                 emptyList<ProductViewUiState>()
             }
+        }
+    }
+    fun removeFromFavorites(productId: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.removeFromFavorites(productId)
+            getFavoriteProducts()
         }
     }
 }

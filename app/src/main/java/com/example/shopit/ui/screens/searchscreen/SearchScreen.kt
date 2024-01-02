@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,16 +48,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
+import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.example.shopit.ui.viewmodels.SearchScreenViewModel
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     searchScreenViewModel: SearchScreenViewModel,
+    productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
-    onProductSearchResultClick: (product: Product)->Unit,
     isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize()
@@ -67,34 +65,42 @@ fun SearchScreen(
     var searchValue by rememberSaveable {
         mutableStateOf("")
     }
-    val scope = rememberCoroutineScope()
     val uiState = searchScreenViewModel.searchResult.collectAsState()
     var isSearch = searchScreenViewModel.isSearch
-    if (isSearch){
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = "Search Results for '$searchValue'",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { searchScreenViewModel.isSearch = false }) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = if (isSearch) "Search Result for '$searchValue'" else "Search",
+                        fontSize = 17.sp,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            if(isSearch) {
+                                searchScreenViewModel.isSearch = false
+                            } else {
+                                navController.popBackStack()
+                            }
                         }
-                    },
-                    modifier = Modifier
-                        .height(35.dp)
-                )
-            },
-        ) {
-            if(uiState.value.isNotEmpty()) {
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back Icon"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .height(35.dp)
+            )
+        },
+    ) {
+        if (isSearch) {
+            if (uiState.value.isNotEmpty()) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
@@ -105,7 +111,7 @@ fun SearchScreen(
                         SearchProductItem(
                             product = item,
                             onProductSearchResultClick = {
-                                onProductSearchResultClick(item)
+                                productScreenViewModel.getProduct(item.toProductViewUiState(item))
                                 navController.navigate(Screens.PRODUCT_SCREEN.name)
                             }
                         )
@@ -120,72 +126,46 @@ fun SearchScreen(
                         .fillMaxWidth()
                 )
             }
-        }
-    } else{
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Search",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
-                    }
-                },
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .height(35.dp)
-            )
-        },
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 35.dp, start = 8.dp, end = 8.dp, bottom = 50.dp)
-        ) {
-            Spacer(modifier = Modifier.height(15.dp))
-            OutlinedTextField(
-                value = searchValue,
-                onValueChange = { searchValue = it },
-                placeholder = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
+                    .fillMaxSize()
+                    .padding(top = 35.dp, start = 8.dp, end = 8.dp, bottom = 50.dp)
+            ) {
+                Spacer(modifier = Modifier.height(15.dp))
+                OutlinedTextField(
+                    value = searchValue,
+                    onValueChange = { searchValue = it },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Search"
+                        )
+                    },
+                    placeholder = {
                         Text(text = "Search")
-                    }
-                },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(onSearch = {
-                    scope.launch {
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(onSearch = {
                         searchScreenViewModel.search(searchValue)
-                    }
-                }),
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier
-                    .width(320.dp)
-            )
-            Spacer(modifier = Modifier.height(35.dp))
-            Text(
-                text = "Recent Search results",
-                fontWeight = FontWeight.ExtraBold
-            )
+                    }),
+                    shape = RoundedCornerShape(15.dp),
+//                    modifier = Modifier
+//                        .width(320.dp)
+                )
+                Spacer(modifier = Modifier.height(35.dp))
+                Text(
+                    text = "Recent Search results",
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
         }
-
     }
-}
-
 }
 
 @Composable
@@ -231,6 +211,6 @@ fun SearchProductItem(
 @Composable
 fun SeachScreenPreview() {
     MaterialTheme {
-//        SearchScreen()
+        
     }
 }

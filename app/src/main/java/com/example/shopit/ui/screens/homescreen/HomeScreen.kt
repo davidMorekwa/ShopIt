@@ -1,17 +1,20 @@
 package com.example.shopit.ui.screens
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,16 +26,19 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -56,6 +62,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,18 +77,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
+import com.example.shopit.data.network.ConnectivityObserver
 import com.example.shopit.ui.uiStates.HomeUiState
 import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.ui.viewmodels.CartScreenViewModel
 import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
 import com.example.shopit.ui.viewmodels.HomeScreenViewModel
+import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.N)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,18 +100,38 @@ fun HomeScreen(
     navController: NavController,
     cartScreenViewModel: CartScreenViewModel,
     favoriteScreenViewModel: FavoriteScreenViewModel,
+    productScreenViewModel: ProductScreenViewModel,
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
     isActive: Int,
     modifier: Modifier = Modifier
-        .fillMaxSize()
+        .fillMaxSize(),
+    connectivityObserver: ConnectivityObserver
 ) {
+    val networkStatus by connectivityObserver.observeConnection().collectAsState(
+        initial = ConnectivityObserver.Status.Available
+    )
+    when(networkStatus){
+        ConnectivityObserver.Status.Unavailable -> {
+            homeScreenViewModel.networkUnavailable()
+        }
+        ConnectivityObserver.Status.Available -> {
+            homeScreenViewModel.getInitialProducts()
+        }
+        ConnectivityObserver.Status.Lost -> {
+            TODO("Implement functionality when connection is lost")
+        }
+        ConnectivityObserver.Status.Losing -> {
+            TODO("Implement functionality when connection is losing")
+        }
+    }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var uiState = homeScreenViewModel.homeUiState.collectAsState()
+//    val pagedProducts = homeScreenViewModel.pagedProducts.collectAsLazyPagingItems()
     var categories = homeScreenViewModel.categoryList.collectAsState()
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
     var themeUiState = homeScreenViewModel.toggleSwitchState.collectAsState()
+    var uiState = homeScreenViewModel.homeUiState.collectAsState()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -146,14 +176,20 @@ fun HomeScreen(
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet(
+                    windowInsets = WindowInsets(
+                        bottom = 50.dp,
+                    ),
                     modifier = Modifier
                         .width(258.dp)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Spacer(Modifier.height(52.dp))
                     Column(
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
@@ -202,7 +238,6 @@ fun HomeScreen(
                             }
                         )
                     }
-
                 }
             },
             content = {
@@ -212,8 +247,18 @@ fun HomeScreen(
                             .fillMaxSize()
                             .padding(top = 45.dp, bottom = 50.dp)
                     ) {
+//                        PagedDataScreen(
+//                            products = pagedProducts,
+//                            viewModel = homeScreenViewModel,
+//                            navController = navController,
+//                            cartScreenViewModel = cartScreenViewModel,
+//                            productScreenViewModel = productScreenViewModel,
+//                            categories = categories.value
+//                        )
                         when (uiState.value) {
-                            is HomeUiState.Error -> ErrorScreen()
+                            is HomeUiState.Error -> ErrorScreen(
+                                onRetryClicked = { homeScreenViewModel.getInitialProducts() }
+                            )
                             is HomeUiState.Loading -> LoadingScreen()
                             is HomeUiState.Success -> {
                                 if ((uiState.value as HomeUiState.Success).products.isNotEmpty()) {
@@ -221,8 +266,8 @@ fun HomeScreen(
                                         products = (uiState.value as HomeUiState.Success).products,
                                         viewModel = homeScreenViewModel,
                                         navController = navController,
-                                        scope = scope,
                                         cartScreenViewModel = cartScreenViewModel,
+                                        productScreenViewModel = productScreenViewModel,
                                         categories = categories.value
                                     )
                                 } else {
@@ -244,18 +289,22 @@ fun HomeScreen(
                         }
 
                     }
-                } else if (selectedItem.value == 3) {
+                }
+                else if (selectedItem.value == 3) {
+                    favoriteScreenViewModel.getFavoriteProducts()
                     FavoritesScreen(
                         favoriteScreenViewModel = favoriteScreenViewModel,
                         navController = navController,
+                        productScreenViewModel = productScreenViewModel
                     )
                 }
-            }
+            },
         )
     }
 }
 @Composable
 fun ErrorScreen(
+    onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -265,6 +314,9 @@ fun ErrorScreen(
         modifier = modifier
     ) {
         Text(text = "An error has occurred when trying to get data! :(")
+        Button(onClick = onRetryClicked) {
+            Text(text = "Retry")
+        }
     }
 }
 
@@ -284,6 +336,61 @@ fun LoadingScreen(
     }
 }
 
+@Composable
+fun PagedDataScreen(
+    products: LazyPagingItems<Product>,
+    categories: List<String>,
+    viewModel: HomeScreenViewModel,
+    cartScreenViewModel: CartScreenViewModel,
+    productScreenViewModel: ProductScreenViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+        .fillMaxSize()
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(start = 8.dp)
+        ) {
+            items(categories) { category: String ->
+                CategoryItem(
+                    category = category,
+                    onCategoryClick = { viewModel.filterProductsByCategory(category) }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 150.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ){
+            items(
+                count = products.itemCount,
+
+            ){ index: Int ->
+                val prod = products[index]
+                prod?.let { item ->
+                    ProductItem(
+                        product = item,
+                        onProductClick = {
+                            productScreenViewModel.getProduct(item.toProductViewUiState(item))
+                            navController.navigate(Screens.PRODUCT_SCREEN.name)
+                        },
+                        onAddToCartClick = {
+                            cartScreenViewModel.addProductToCart(item)
+                        }
+                    )
+                }
+            }
+        }
+
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SuccessScreen(
@@ -291,8 +398,8 @@ fun SuccessScreen(
     categories: List<String>,
     viewModel: HomeScreenViewModel,
     cartScreenViewModel: CartScreenViewModel,
+    productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
-    scope: CoroutineScope,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -316,22 +423,18 @@ fun SuccessScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Adaptive(minSize = 150.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(products) { item: Product ->
                 ProductItem(
                     product = item,
                     onProductClick = {
-                        scope.launch {
-                            viewModel.updateProductUiState(item)
+                            productScreenViewModel.getProduct(item.toProductViewUiState(item))
                             navController.navigate(Screens.PRODUCT_SCREEN.name)
-                        }
                     },
                     onAddToCartClick = {
-                        scope.launch {
-                            cartScreenViewModel.addProductToCart(item)
-                        }
+                        cartScreenViewModel.addProductToCart(item)
                     }
                 )
 
@@ -376,7 +479,9 @@ fun ProductItem(
     } else {
         elevation = 1.dp
     }
-    var isAddedToCart = insteractionSource.collectIsPressedAsState().value
+    var isAddedToCart by rememberSaveable {
+        mutableStateOf(false)
+    }
     var cartIcon = if (isAddedToCart){
         Icons.Filled.ShoppingCart
     } else {
@@ -449,6 +554,7 @@ fun ProductItem(
                     IconButton(
                         onClick = {
                             onAddToCartClick(product)
+                            isAddedToCart = true
                             Toast.makeText(context, "Added to Cart!", Toast.LENGTH_SHORT).show()
                         },
                         interactionSource = insteractionSource
@@ -530,9 +636,9 @@ val menuItems: List<MenuItem> = listOf(
     ),
     MenuItem(
         id = 3,
-        title = "Wishlist",
-        icon = Icons.Default.List,
-        description = "Cart Icon"
+        title = "Favorites",
+        icon = Icons.Default.Favorite,
+        description = "Favorites Icon"
     ),
     MenuItem(
         id = 4,

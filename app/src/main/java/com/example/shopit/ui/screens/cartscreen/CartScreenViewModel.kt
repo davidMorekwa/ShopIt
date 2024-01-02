@@ -5,8 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.network.ApiServiceRepository
-import com.example.shopit.data.remote.RemoteDatabaseRepository
+import com.example.shopit.data.remote.darajaApi.ApiServiceRepository
+import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
 import com.example.shopit.ui.uiStates.CartViewUiState
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +26,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     fun addProductToCart(product : Product){
         val cartProduct:CartViewUiState = this.toCartView(product)
         println("PRODUCT ${cartProduct.id} ADDED TO CART: Quantity = ${cartProduct.quantity}")
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.addProductToCart(cartProduct)
         }
 
@@ -39,8 +39,10 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     }
     fun getProductsInCart() {
         viewModelScope.launch(Dispatchers.IO) {
-            _cartScreenUiState.value = try {
-                repository.getProductsInCart()
+            try {
+                repository.getProductsInCart().collect{
+                    _cartScreenUiState.value = it
+                }
             } catch (e: Exception) {
                 println(e.message)
                 emptyList<CartViewUiState>()
@@ -50,7 +52,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
         }
     }
     fun removeProductFromCart(product: CartViewUiState){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.removeProductFromCart(product)
         }
     }

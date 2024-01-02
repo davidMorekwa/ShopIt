@@ -69,6 +69,8 @@ import com.example.shopit.ui.viewmodels.CartScreenViewModel
 import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 enum class PaymentMethods{
     MPESA,
@@ -100,11 +102,19 @@ fun CartScreen(
     var deliveryAddress: String by rememberSaveable {
         mutableStateOf("")
     }    
-    val df = DecimalFormat("#.##")
+//    val df = DecimalFormat("#.##")
+    val df = DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.US))
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "My Cart") },
+                title = {
+                    Text(
+                        text = "My Cart",
+                        fontSize = 17.sp,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
@@ -115,11 +125,10 @@ fun CartScreen(
             )
         }
     ) {
-        if (products.value.isNotEmpty()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 42.dp)
+                .padding(top = 42.dp, bottom = 52.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -127,12 +136,23 @@ fun CartScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(
-                    text = "SUBTOTAL: $${df.format(subTotal.value)}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Subtotal: Ksh. ",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                    Text(
+                        text = "${df.format(subTotal.value)}",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
+
                 Button(
+                    enabled = products.value.isNotEmpty(),
                     onClick = {
                         isBottomModalSheetVisible = true
                     }
@@ -140,177 +160,179 @@ fun CartScreen(
                     Text(text = "Checkout")
                 }
             }
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .padding(top = 52.dp, start = 8.dp, end = 8.dp)
-            ) {
-                items(products.value) { item ->
-                    CartProductItem(
-                        product = item,
-                        onRemoveFromCart = {
-                            scope.launch {
-                                cartScreenViewModel.removeProductFromCart(item)
-                                cartScreenViewModel.getProductsInCart()
-                            }
-
-                        },
-                        viewModel = cartScreenViewModel
-                    )
-                }
-
-            }
-            AnimatedVisibility(visible = isBottomModalSheetVisible) {
-                ModalBottomSheet(
-                    sheetState = sheetState,
-                    onDismissRequest = { isBottomModalSheetVisible = false },
+            if (products.value.isNotEmpty()) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
-                        .padding(bottom = 30.dp, start = 4.dp, end = 4.dp)
-                        .height(720.dp)
+                        .padding(top = 52.dp, start = 8.dp, end = 8.dp)
                 ) {
-                    Column {
-                        Text(text = "Delivery Address")
-                        OutlinedTextField(
-                            value = deliveryAddress,
-                            onValueChange = { deliveryAddress = it },
-                            placeholder = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Icon(
-                                        painterResource(id = R.drawable.icons8_location_52___),
-                                        contentDescription = "Location Icon"
-                                    )
-                                    Text(
-                                        text = "Delivery Address",
-                                        fontWeight = FontWeight.Light
-                                    )
+                    items(products.value) { item ->
+                        CartProductItem(
+                            product = item,
+                            onRemoveFromCart = {
+                                scope.launch {
+                                    cartScreenViewModel.removeProductFromCart(item)
+                                    cartScreenViewModel.getProductsInCart()
                                 }
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.None,
-                                imeAction = ImeAction.Next
-                            ),
 
+                            },
+                            viewModel = cartScreenViewModel
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-                                    paymentChosen = PaymentMethods.MPESA.name
-                                },
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = if (paymentChosen == PaymentMethods.MPESA.name) MaterialTheme.colorScheme.primary else Color.Transparent
-                                ),
-                                modifier = Modifier
-                                    .height(45.dp)
-                                    .width(75.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable._12px_m_pesa_logo_01_svg),
-                                    contentDescription = "Mpesa Icon",
-                                    modifier = Modifier
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = {
-                                    paymentChosen = PaymentMethods.CARD.name
-                                },
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = if (paymentChosen == PaymentMethods.CARD.name) MaterialTheme.colorScheme.primary else Color.Transparent
-                                ),
-                                modifier = Modifier
-                                    .height(45.dp)
-                                    .width(75.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable._490135017_visa_82256),
-                                    contentDescription = "Visa Icon",
-                                    modifier = Modifier
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = {
-                                    paymentChosen = PaymentMethods.PAYPAL.name
-                                },
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = if (paymentChosen == PaymentMethods.PAYPAL.name) MaterialTheme.colorScheme.primary else Color.Transparent
-                                ),
-                                modifier = Modifier
-                                    .height(45.dp)
-                                    .width(75.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.icons8_paypal_48___),
-                                    contentDescription = "Paypal Icon",
-                                    modifier = Modifier
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        AnimatedVisibility(visible = paymentChosen == PaymentMethods.MPESA.name) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                OutlinedTextField(
-                                    value = phoneNumber,
-                                    onValueChange = {
-                                        phoneNumber = it
-                                        println(phoneNumber)
-                                    },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Phone,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    placeholder = {
+                    }
+
+                }
+                AnimatedVisibility(visible = isBottomModalSheetVisible) {
+                    ModalBottomSheet(
+                        sheetState = sheetState,
+                        onDismissRequest = { isBottomModalSheetVisible = false },
+                        modifier = Modifier
+                            .padding(bottom = 30.dp, start = 4.dp, end = 4.dp)
+                            .height(720.dp)
+                    ) {
+                        Column {
+                            Text(text = "Delivery Address")
+                            OutlinedTextField(
+                                value = deliveryAddress,
+                                onValueChange = { deliveryAddress = it },
+                                placeholder = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Icon(
+                                            painterResource(id = R.drawable.icons8_location_52___),
+                                            contentDescription = "Location Icon"
+                                        )
                                         Text(
-                                            text = "712345678",
+                                            text = "Delivery Address",
                                             fontWeight = FontWeight.Light
                                         )
-                                    },
-                                    prefix = {
-                                        Text(text = "+254")
-                                    },
-                                    shape = RoundedCornerShape(20.dp),
-                                    modifier = Modifier
-                                        .width(190.dp)
-                                )
-                                Button(
-                                    onClick = {
-                                        scope.launch {
-                                            cartScreenViewModel.checkout("254$phoneNumber")
-                                            isBottomModalSheetVisible = false
-                                        }
                                     }
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.None,
+                                    imeAction = ImeAction.Next
+                                ),
+
+                                )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                OutlinedButton(
+                                    onClick = {
+                                        paymentChosen = PaymentMethods.MPESA.name
+                                    },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = if (paymentChosen == PaymentMethods.MPESA.name) MaterialTheme.colorScheme.primary else Color.Transparent
+                                    ),
+                                    modifier = Modifier
+                                        .height(45.dp)
+                                        .width(75.dp)
                                 ) {
-                                    Text(
-                                        text = "Complete"
+                                    Image(
+                                        painter = painterResource(id = R.drawable._12px_m_pesa_logo_01_svg),
+                                        contentDescription = "Mpesa Icon",
+                                        modifier = Modifier
                                     )
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        paymentChosen = PaymentMethods.CARD.name
+                                    },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = if (paymentChosen == PaymentMethods.CARD.name) MaterialTheme.colorScheme.primary else Color.Transparent
+                                    ),
+                                    modifier = Modifier
+                                        .height(45.dp)
+                                        .width(75.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable._490135017_visa_82256),
+                                        contentDescription = "Visa Icon",
+                                        modifier = Modifier
+                                    )
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        paymentChosen = PaymentMethods.PAYPAL.name
+                                    },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = if (paymentChosen == PaymentMethods.PAYPAL.name) MaterialTheme.colorScheme.primary else Color.Transparent
+                                    ),
+                                    modifier = Modifier
+                                        .height(45.dp)
+                                        .width(75.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.icons8_paypal_48___),
+                                        contentDescription = "Paypal Icon",
+                                        modifier = Modifier
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            AnimatedVisibility(visible = paymentChosen == PaymentMethods.MPESA.name) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                ) {
+                                    OutlinedTextField(
+                                        value = phoneNumber,
+                                        onValueChange = {
+                                            phoneNumber = it
+                                            println(phoneNumber)
+                                        },
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Phone,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        placeholder = {
+                                            Text(
+                                                text = "712345678",
+                                                fontWeight = FontWeight.Light
+                                            )
+                                        },
+                                        prefix = {
+                                            Text(text = "+254")
+                                        },
+                                        shape = RoundedCornerShape(20.dp),
+                                        modifier = Modifier
+                                            .width(190.dp)
+                                    )
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                cartScreenViewModel.checkout("254$phoneNumber")
+                                                isBottomModalSheetVisible = false
+                                            }
+                                        }
+                                    ) {
+                                        Text(
+                                            text = "Complete"
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 52.dp)
-            ){
-                Text(text = "Cart is empty :(")
+            } else {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 52.dp)
+                ){
+                    Text(text = "Cart is empty :(")
+                }
             }
         }
 

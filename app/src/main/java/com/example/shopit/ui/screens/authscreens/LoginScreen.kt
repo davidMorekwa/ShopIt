@@ -24,10 +24,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -53,6 +51,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,35 +62,29 @@ import com.example.shopit.ui.viewmodels.AuthViewModel
 import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun RegistrationScreen(
-    navController: NavController,
+fun LoginScreen(
     authViewModel: AuthViewModel,
-    onSuccessfulRegistration:()->Unit
+    navController: NavController,
+    onSuccessfullLogin: ()->Unit
 ) {
-    var name: String by rememberSaveable {
-        mutableStateOf("")
-    }
     var email: String by rememberSaveable {
         mutableStateOf("")
     }
     var password: String by rememberSaveable {
         mutableStateOf("")
     }
-    var confirm_password: String by rememberSaveable {
-        mutableStateOf("")
-    }
-    var isPasswordMatch: Boolean by rememberSaveable {
-        mutableStateOf(true)
-    }
-    val keyboardController = LocalSoftwareKeyboardController.current
     var isShowPassword: Boolean by rememberSaveable {
         mutableStateOf(false)
     }
+    var isInvalidCredentials: Boolean by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
-    val state = authViewModel.registerState.collectAsState(initial = null)
+    val state = authViewModel.signInState.collectAsState(initial = null)
     val context = LocalContext.current
     Scaffold(
         topBar = {
@@ -101,18 +94,16 @@ fun RegistrationScreen(
         }
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround,
             modifier = Modifier
-                .padding(top = 50.dp)
                 .fillMaxSize()
+                .padding(top = 50.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Box {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(16.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "Hey,",
@@ -120,35 +111,19 @@ fun RegistrationScreen(
                         fontWeight = FontWeight.Light
                     )
                     Text(
-                        text = "Create an Account",
+                        text = "Welcome Back",
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(25.dp))
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = {name = it},
-                        label = {
-                            Text(text = "Name")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Next
-                        ),
-                        leadingIcon = {
-                            Icon(Icons.Filled.Person, contentDescription = "User icon")
-                        },
-                        shape = RoundedCornerShape(15.dp)
-                    )
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
                     OutlinedTextField(
                         value = email,
-                        onValueChange = {email = it},
+                        onValueChange = { email = it },
                         label = {
-                            Text(text = "Email")
+                            Text(text = "Email Address")
                         },
                         leadingIcon = {
-                            Icon(Icons.Filled.Email, contentDescription = "Email icon")
+                            Icon(Icons.Filled.Email, contentDescription = "email icon")
                         },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
@@ -156,19 +131,12 @@ fun RegistrationScreen(
                         ),
                         shape = RoundedCornerShape(15.dp)
                     )
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     OutlinedTextField(
                         value = password,
-                        onValueChange = {password = it},
+                        onValueChange = { password = it },
                         label = {
                             Text(text = "Password")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Next
-                        ),
-                        leadingIcon = {
-                            Icon(Icons.Filled.Lock, contentDescription = "Password Icon")
                         },
                         trailingIcon = {
                             Text(
@@ -176,63 +144,45 @@ fun RegistrationScreen(
                                 modifier = Modifier
                                     .clickable {
                                         isShowPassword = !isShowPassword
+                                        println("Clicked Show password")
                                     },
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Light
                             )
                         },
-                        visualTransformation = if(isShowPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                        shape = RoundedCornerShape(15.dp)
-                    )
-                    Spacer(modifier = Modifier.height(15.dp))
-                    OutlinedTextField(
-                        value = confirm_password,
-                        onValueChange = {confirm_password = it},
-                        label = {
-                            Text(text = "Confirm Password")
+                        leadingIcon = {
+                            Icon(Icons.Filled.Lock, contentDescription = "password icon")
                         },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
-                        leadingIcon = {
-                            Icon(Icons.Filled.Lock, contentDescription = "Password Icon")
-                        },
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                isPasswordMatch = password == confirm_password
                                 keyboardController?.hide()
-                                scope.launch {
-                                    authViewModel.registerUser(email, password, name)
-                                }
+                                authViewModel.loginUser(email, password)
                             }
                         ),
-                        trailingIcon = {
-                            Text(
-                                text = if(isShowPassword)"Hide" else "Show",
-                                modifier = Modifier
-                                    .clickable {
-                                        isShowPassword = !isShowPassword
-                                    },
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Light
-                            )
-                        },
                         visualTransformation = if(isShowPassword) VisualTransformation.None else PasswordVisualTransformation(),
                         shape = RoundedCornerShape(15.dp)
                     )
-                    Spacer(modifier = Modifier.height(25.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     AnimatedVisibility(
-                        visible = !isPasswordMatch,
+                        visible = isInvalidCredentials,
                         enter = slideInVertically(spring(dampingRatio = Spring.DampingRatioHighBouncy, stiffness = Spring.StiffnessLow))
                     ) {
                         Text(
-                            text = "Passwords don't match!",
-                            fontSize = 12.sp,
+                            text = "Invalid credentials",
+                            fontSize = 15.sp,
                             color = Color.Red
                         )
                     }
-
+                    Text(
+                        text = "Forgot your Password?",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Light,
+                        textDecoration = TextDecoration.Underline
+                    )
                 }
             }
             if (state.value?.isLoading == true) {
@@ -244,29 +194,28 @@ fun RegistrationScreen(
                 ) {
                     Button(
                         onClick = {
-                            println("EMAIL: $email, PASSWORD: $password")
-                            scope.launch {
-                                authViewModel.registerUser(email = email, password = password, name = name)
-                            }
+                            authViewModel.loginUser(email, password)
                         },
                         modifier = Modifier
                             .width(200.dp)
-                            .shadow(10.dp, RoundedCornerShape(20.dp))
+                            .shadow(
+                                elevation = 10.dp,
+                                shape = RoundedCornerShape(20.dp),
+                            )
                     ) {
-                        Text(text = "Register")
+                        Text(text = "LogIn")
                     }
+
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(text = "Already have an account? ")
+                        Text(text = "Don't have an account? ")
                         Text(
-                            text = "Login",
+                            text = "Register",
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
-                                .clickable {
-                                    navController.navigate(Screens.LOGIN_SCREEN.name)
-                                }
+                                .clickable { navController.navigate(Screens.REGISTRATION_SCREEN.name) }
                         )
                     }
                 }
@@ -277,7 +226,7 @@ fun RegistrationScreen(
                         val success = state.value?.isSuccess
                         Toast.makeText(context, "${success}", Toast.LENGTH_LONG).show()
                         println("SUCCESS MESSAGE $success")
-                        onSuccessfulRegistration()
+                        onSuccessfullLogin()
                     }
                 }
             }
@@ -287,24 +236,25 @@ fun RegistrationScreen(
                         val error = state.value?.isError
                         Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
                         println("Error MESSAGE $error")
+                        isInvalidCredentials = true
                     }
                 }
             }
         }
 
     }
-
-
 }
+
 
 @Preview
 @Composable
-fun RegistrationPreview() {
+fun LoginScreenPreview() {
     MaterialTheme {
-        RegistrationScreen(
+        LoginScreen(
             authViewModel = viewModel(factory = viewModelProvider.factory),
             navController = rememberNavController(),
-            onSuccessfulRegistration = {}
+            onSuccessfullLogin = {}
         )
     }
+
 }

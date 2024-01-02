@@ -1,6 +1,7 @@
 package com.example.shopit.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +36,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shopit.ui.uiStates.ProductViewUiState
 import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
+import com.example.shopit.ui.viewmodels.ProductScreenViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -41,6 +44,7 @@ import com.example.shopit.ui.viewmodels.FavoriteScreenViewModel
 @Composable
 fun FavoritesScreen(
     favoriteScreenViewModel: FavoriteScreenViewModel,
+    productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
 ) {
     val uiState = favoriteScreenViewModel.favoriteProducts.collectAsState()
@@ -81,6 +85,13 @@ fun FavoritesScreen(
                 items(uiState.value){ item: ProductViewUiState ->
                     FavoriteProductItem(
                         product = item,
+                        onRemoveFromFavorites = {
+                            item._id?.let { favoriteScreenViewModel.removeFromFavorites(it) }
+                        },
+                        onProductClick = {
+                            productScreenViewModel.getProduct(item)
+                            navController.navigate(Screens.PRODUCT_SCREEN.name)
+                        }
                     )
                 }
             }
@@ -100,6 +111,8 @@ fun FavoritesScreen(
 @Composable
 fun FavoriteProductItem(
     product: ProductViewUiState,
+    onRemoveFromFavorites: ()->Unit,
+    onProductClick: ()->Unit
 ) {
     Surface(
         tonalElevation = 1.dp,
@@ -107,6 +120,9 @@ fun FavoriteProductItem(
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                onProductClick()
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -125,11 +141,27 @@ fun FavoriteProductItem(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(text = product.title.toString())
-                Text(
-                    text = "$${product.price.toString()}",
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "$${product.price.toString()}",
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(
+                        onClick = {
+                            onRemoveFromFavorites()
+                        },
+                    ) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Remove From favorites")
+                    }
+                }
+
             }
+            
         }
     }
 }

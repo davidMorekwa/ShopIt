@@ -3,6 +3,7 @@ package com.example.shopit.ui.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -80,7 +81,8 @@ fun ProductScreen(
     homeScreenViewModel: HomeScreenViewModel
 ) {
 
-    val uiState = homeScreenViewModel.productUiState.collectAsState()
+//    val uiState = homeScreenViewModel.productUiState.collectAsState()
+    val uiState = productScreenViewModel.uiState.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -154,18 +156,19 @@ fun ProductView(
     ) {
         HorizontalPager(
             state = pagerState,
-            pageSize = PageSize.Fixed(270.dp),
-            contentPadding = PaddingValues(16.dp),
-            pageSpacing = 15.dp,
+            pageSize = PageSize.Fill,
+            contentPadding = PaddingValues(12.dp),
+            pageSpacing = 14.dp,
             flingBehavior = fling,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(top = 20.dp, end = 8.dp, start = 26.dp)
+                .padding(top = 40.dp)
+                .fillMaxWidth()
         ) { page ->
             Surface(
                 shadowElevation = 5.dp,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
-                    .padding(10.dp)
                     .height(270.dp)
                     .graphicsLayer {
                         val pageOffset = (
@@ -179,7 +182,7 @@ fun ProductView(
                     AsyncImage(
                         model = images.get(page),
                         contentDescription = "Images",
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Fit
                     )
                 }
             }
