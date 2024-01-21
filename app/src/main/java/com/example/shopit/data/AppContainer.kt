@@ -14,6 +14,8 @@ import com.example.shopit.data.remote.darajaApi.DarajaApiService
 import com.example.shopit.data.remote.darajaApi.DefaultApiServiceRepository
 import com.example.shopit.data.remote.repository.DefaultDatabaseRepository
 import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
+import com.example.shopit.data.worker.DefaultWorkerRepository
+import com.example.shopit.data.worker.WorkerRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -29,6 +31,7 @@ interface AppContainer{
     val authRepository: AuthRepository
     val dataStoreInstance: DataStore<Preferences>
     val localDatabaseRepository: LocalDatabaseRepository
+    val workerRepository: WorkerRepository
 }
 private const val TOKEN_PREFERENCE_NAME = "token_preference"
 
@@ -68,4 +71,6 @@ class DefaultAppContainer(
     override val localDatabaseRepository: LocalDatabaseRepository by lazy {
         DefaultLocalDatabaseRepository(ShopitDatabase.getDatabase(context = context).productsDao())
     }
+
+    override val workerRepository: WorkerRepository = DefaultWorkerRepository(context)
 }

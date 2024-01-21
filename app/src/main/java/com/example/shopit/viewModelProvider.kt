@@ -19,7 +19,7 @@ object viewModelProvider {
             HomeScreenViewModel(
                 repository = shopItApplication().container.remoteDatabaseRepository,
                 dataStore = shopItApplication().container.dataStoreInstance,
-                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
+//                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
                 context = shopItApplication().applicationContext
             )
         }

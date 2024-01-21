@@ -16,6 +16,11 @@ class DefaultLocalDatabaseRepository(
 
     override suspend fun upsertProducts(productList: List<Product>) {
 //        TODO
+        val productEntityList: MutableList<ProductEntity> = mutableListOf()
+        for (product in productList){
+            productEntityList.add(product.toProductEntity())
+        }
+        return productsDao.insertProducts(productEntityList.toList())
     }
 
 }

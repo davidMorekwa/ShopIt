@@ -9,5 +9,10 @@ class ShopitApplication:Application() {
     override fun onCreate() {
         super.onCreate()
         container = DefaultAppContainer(applicationContext)
+//        val config = Configuration.Builder()
+//            .setWorkerFactory(WorkerFactory(repository = container.remoteDatabaseRepository, database = container.localDatabaseRepository))
+//            .build()
+//
+//        WorkManager.initialize(this, config)
     }
 }
