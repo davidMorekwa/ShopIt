@@ -1,10 +1,12 @@
 package com.example.shopit.data.local
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.shopit.data.model.Product
 
 @Entity(tableName = "table_products")
 data class ProductEntity(
+    @PrimaryKey
     var id: String,
     var title: String,
     var description: String,

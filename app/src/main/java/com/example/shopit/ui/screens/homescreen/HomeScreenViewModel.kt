@@ -8,8 +8,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shopit.data.local.LocalDatabaseRepository
-import com.example.shopit.data.model.Product
 import com.example.shopit.data.remote.darajaApi.PreferenceKeys
 import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +22,7 @@ import java.io.IOException
 class HomeScreenViewModel(
     private val repository: RemoteDatabaseRepository,
     private val dataStore: DataStore<Preferences>,
-    private val localDatabaseRepository: LocalDatabaseRepository,
+//    private val localDatabaseRepository: LocalDatabaseRepository,
     private val context: Context
 ):ViewModel() {
     private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
@@ -83,11 +81,6 @@ class HomeScreenViewModel(
                 _homeUiState.value = HomeUiState.Error
             }
             _categoryList.value = getCategories(_homeUiState.value)
-        }
-    }
-    fun storeLocally(productList: List<Product>){
-        viewModelScope.launch {
-            localDatabaseRepository.upsertProducts(productList)
         }
     }
     fun filterProductsByCategory(category: String){
