@@ -2,13 +2,18 @@ package com.example.shopit.ui.screens.productscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
+import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductScreenViewModel(private val repository: RemoteDatabaseRepository):ViewModel() {
+@HiltViewModel
+class ProductScreenViewModel @Inject constructor(
+    private val repository: RemoteDatabaseRepository
+):ViewModel() {
     private val _uiState: MutableStateFlow<ProductViewUiState> = MutableStateFlow(ProductViewUiState())
     val uiState = _uiState.asStateFlow()
     fun addToFavorites(productViewUiState: ProductViewUiState){

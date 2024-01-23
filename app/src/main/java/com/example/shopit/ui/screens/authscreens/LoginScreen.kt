@@ -59,7 +59,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.shopit.ui.screens.Screens
-import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -251,7 +250,7 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     MaterialTheme {
         LoginScreen(
-            authViewModel = viewModel(factory = viewModelProvider.factory),
+            authViewModel = viewModel(),
             navController = rememberNavController(),
             onSuccessfullLogin = {}
         )

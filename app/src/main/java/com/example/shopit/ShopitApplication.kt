@@ -1,18 +1,23 @@
 package com.example.shopit
 
 import android.app.Application
-import com.example.shopit.data.AppContainer
-import com.example.shopit.data.DefaultAppContainer
+import androidx.work.Configuration
+import androidx.work.WorkManager
+import com.example.shopit.data.worker.MyWorkerFactory
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
-class ShopitApplication:Application() {
-    lateinit var container: AppContainer
+@HiltAndroidApp
+class ShopitApplication: Application(), Configuration.Provider {
+
+    @Inject lateinit var workerFactory: MyWorkerFactory
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer(applicationContext)
-//        val config = Configuration.Builder()
-//            .setWorkerFactory(WorkerFactory(repository = container.remoteDatabaseRepository, database = container.localDatabaseRepository))
-//            .build()
-//
-//        WorkManager.initialize(this, config)
+        WorkManager.initialize(this, workManagerConfiguration)
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }

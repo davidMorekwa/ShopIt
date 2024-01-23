@@ -1,4 +1,4 @@
-package com.example.shopit.data.utlis
+package com.example.shopit.data.network.darajaApi.utlis
 
 import com.androidstudy.daraja.util.TransactionType
 

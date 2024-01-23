@@ -13,7 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.shopit.data.network.ConnectivityObserver
+import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.authscreens.AuthViewModel
 import com.example.shopit.ui.screens.cartscreen.CartScreen
@@ -24,7 +24,7 @@ import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
 import com.example.shopit.ui.screens.productscreen.ProductScreen
 import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
 import com.example.shopit.ui.screens.searchscreen.SearchScreen
-import com.example.shopit.viewModelProvider
+import com.example.shopit.ui.screens.searchscreen.SearchScreenViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,14 +34,13 @@ fun NavGraph(
     homeScreenViewModel: HomeScreenViewModel,
     isActive: Int,
     onLogOutClick: ()-> Unit,
-    connectivityObserver: ConnectivityObserver,
-    cartScreenViewModel: CartScreenViewModel
+    cartScreenViewModel: CartScreenViewModel,
+    networkStatus: ConnectivityObserver.Status
 ) {
-    val productScreenViewModel: ProductScreenViewModel =
-        viewModel(factory = viewModelProvider.factory)
-    val favoriteScreenViewModel: FavoriteScreenViewModel =
-        viewModel(factory = viewModelProvider.factory)
-    val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
+    val productScreenViewModel: ProductScreenViewModel = viewModel()
+    val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel()
+    val searchScreenViewModel: SearchScreenViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = Screens.HOME_SCREEN.name
@@ -72,7 +71,7 @@ fun NavGraph(
                 onLogOutClick = onLogOutClick,
                 favoriteScreenViewModel = favoriteScreenViewModel,
                 productScreenViewModel = productScreenViewModel,
-                connectivityObserver = connectivityObserver
+                networkStatus = networkStatus
             )
         }
         composable(
@@ -120,7 +119,7 @@ fun NavGraph(
             }
         ) {
             SearchScreen(
-                searchScreenViewModel = viewModel(factory = viewModelProvider.factory),
+                searchScreenViewModel = searchScreenViewModel,
                 navController = navController,
                 isActive = isActive,
                 productScreenViewModel = productScreenViewModel

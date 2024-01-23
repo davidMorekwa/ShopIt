@@ -1,10 +1,8 @@
-package com.example.shopit.data.network
+package com.example.shopit.data.network.connectionObserver
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
-import android.os.Build
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -13,15 +11,15 @@ import kotlinx.coroutines.launch
 
 class NetworkConnectivityObserver(
     private val context: Context
-) : ConnectivityObserver{
-    private val connectionManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    @RequiresApi(Build.VERSION_CODES.N)
-    override fun observeConnection(): Flow<ConnectivityObserver.Status> {
+) : ConnectivityObserver {
+    private val connMgr = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    override fun observe(): Flow<ConnectivityObserver.Status> {
         return callbackFlow {
             val callback = object : ConnectivityManager.NetworkCallback(){
                 override fun onAvailable(network: Network) {
                     super.onAvailable(network)
                     launch {
+                        println("Network is available")
                         send(ConnectivityObserver.Status.Available)
                     }
                 }
@@ -29,6 +27,7 @@ class NetworkConnectivityObserver(
                 override fun onLosing(network: Network, maxMsToLive: Int) {
                     super.onLosing(network, maxMsToLive)
                     launch {
+                        println("Network is Losing")
                         send(ConnectivityObserver.Status.Losing)
                     }
                 }
@@ -36,6 +35,7 @@ class NetworkConnectivityObserver(
                 override fun onLost(network: Network) {
                     super.onLost(network)
                     launch {
+                        println("Network is Lost")
                         send(ConnectivityObserver.Status.Lost)
                     }
                 }
@@ -43,13 +43,14 @@ class NetworkConnectivityObserver(
                 override fun onUnavailable() {
                     super.onUnavailable()
                     launch {
+                        println("Network is Unavailable")
                         send(ConnectivityObserver.Status.Unavailable)
                     }
                 }
             }
-            connectionManager.registerDefaultNetworkCallback(callback)
+            connMgr.registerDefaultNetworkCallback(callback)
             awaitClose{
-                connectionManager.unregisterNetworkCallback(callback)
+                connMgr.unregisterNetworkCallback(callback)
             }
         }.distinctUntilChanged()
     }

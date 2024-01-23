@@ -1,4 +1,4 @@
-package com.example.shopit.data.remote.repository
+package com.example.shopit.data.repositories.remote
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

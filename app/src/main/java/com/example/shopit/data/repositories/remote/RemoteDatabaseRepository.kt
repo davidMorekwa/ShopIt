@@ -1,4 +1,4 @@
-package com.example.shopit.data.remote.repository
+package com.example.shopit.data.repositories.remote
 
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.screens.cartscreen.CartViewUiState

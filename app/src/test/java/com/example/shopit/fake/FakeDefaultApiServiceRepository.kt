@@ -1,6 +1,6 @@
 package com.example.shopit.fake
 
-import com.example.shopit.data.remote.darajaApi.ApiServiceRepository
+import com.example.shopit.data.network.darajaApi.ApiServiceRepository
 
 class FakeDefaultApiServiceRepository(): ApiServiceRepository {
     override suspend fun getOAuthAccessoken(): String? {

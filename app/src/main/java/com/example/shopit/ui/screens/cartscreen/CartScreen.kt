@@ -64,7 +64,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.shopit.R
-import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -448,7 +447,7 @@ fun CartProductItem(
 fun CartScreenPreview() {
     MaterialTheme {
         CartScreen(
-            cartScreenViewModel = viewModel(factory = viewModelProvider.factory),
+            cartScreenViewModel = viewModel(),
             navController = rememberNavController()
         )
     }

@@ -1,4 +1,4 @@
-package com.example.shopit.data.remote.darajaApi
+package com.example.shopit.data.network.darajaApi
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
@@ -9,10 +9,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.androidstudy.daraja.Daraja
 import com.androidstudy.daraja.callback.DarajaResult
 import com.androidstudy.daraja.util.Environment
-import com.example.shopit.data.utlis.AppUtils
-import com.example.shopit.data.utlis.Config
+import com.example.shopit.data.network.darajaApi.utlis.AppUtils
+import com.example.shopit.data.network.darajaApi.utlis.Config
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 
 interface ApiServiceRepository {
@@ -26,7 +27,7 @@ object PreferenceKeys{
     val USE_DARK_THEME = booleanPreferencesKey("use_dark_theme")
 }
 
-class DefaultApiServiceRepository(
+class DefaultApiServiceRepository @Inject constructor(
     private val apiService: DarajaApiService,
     private val dataStore: DataStore<Preferences>
 ): ApiServiceRepository {

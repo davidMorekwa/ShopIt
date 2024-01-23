@@ -1,9 +1,9 @@
-package com.example.shopit.data.network
+package com.example.shopit.data.network.connectionObserver
 
 import kotlinx.coroutines.flow.Flow
 
 interface ConnectivityObserver {
-    fun observeConnection(): Flow<Status>
+    fun observe(): Flow<Status>
     enum class Status{
         Available, Unavailable, Lost, Losing
     }
