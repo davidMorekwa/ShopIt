@@ -13,17 +13,19 @@ interface WorkerRepository {
 }
 
 class DefaultWorkerRepository(context: Context): WorkerRepository{
-    private val workMgr = WorkManager.getInstance(context)
+    private var workMgr =  WorkManager.getInstance(context)
     override fun syncData() {
         val constraints = Constraints.Builder()
             .setRequiresBatteryNotLow(true)
             .setRequiresStorageNotLow(true)
             .setRequiredNetworkType(NetworkType.CONNECTED)
-        val syncDataWorker = PeriodicWorkRequestBuilder<DataSyncWorker>(1, TimeUnit.MINUTES)
-            .setConstraints(constraints.build())
+            .build()
+        val syncDataWorker = PeriodicWorkRequestBuilder<ProductTableSyncWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
 
 
-        workMgr.enqueueUniquePeriodicWork("Sync Data Periodic Worker", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, syncDataWorker.build())
-
+//       workMgr.enqueueUniqueWork("Sync Data Periodic Worker", ExistingPeriodicWorkPolicy.KEEP, syncDataWorker)
+        workMgr.enqueueUniquePeriodicWork("Sync Data Periodic Worker", ExistingPeriodicWorkPolicy.KEEP, syncDataWorker)
     }
 }

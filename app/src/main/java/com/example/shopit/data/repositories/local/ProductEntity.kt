@@ -1,4 +1,4 @@
-package com.example.shopit.data.local
+package com.example.shopit.data.repositories.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -60,7 +60,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.shopit.ui.screens.Screens
-import com.example.shopit.viewModelProvider
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -298,7 +297,7 @@ fun RegistrationScreen(
 fun RegistrationPreview() {
     MaterialTheme {
         RegistrationScreen(
-            authViewModel = viewModel(factory = viewModelProvider.factory),
+            authViewModel = viewModel(),
             navController = rememberNavController(),
             onSuccessfulRegistration = {}
         )

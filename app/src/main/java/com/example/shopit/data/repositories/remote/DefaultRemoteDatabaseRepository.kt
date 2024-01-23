@@ -1,4 +1,4 @@
-package com.example.shopit.data.remote.repository
+package com.example.shopit.data.repositories.remote
 
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.screens.cartscreen.CartViewUiState
@@ -12,13 +12,15 @@ import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
 
-class DefaultDatabaseRepository(private val database: FirebaseDatabase) : RemoteDatabaseRepository {
+class DefaultRemoteDatabaseRepository @Inject constructor(private val database: FirebaseDatabase) :
+    RemoteDatabaseRepository {
     private val productsRef = database.getReference("Products")
     private val cartRef = database.getReference("Cart")
     private val favoriteRef = database.getReference("Favorites")

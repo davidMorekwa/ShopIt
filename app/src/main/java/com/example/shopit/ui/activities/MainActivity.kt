@@ -45,29 +45,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.shopit.data.network.ConnectivityObserver
-import com.example.shopit.data.network.NetworkConnectivityObserver
+import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
+import com.example.shopit.data.network.connectionObserver.NetworkConnectivityObserver
+import com.example.shopit.data.worker.WorkerRepository
 import com.example.shopit.ui.naivigation.NavGraph
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
 import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
 import com.example.shopit.ui.theme.ShopItTheme
-import com.example.shopit.viewModelProvider
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var workerRepository: WorkerRepository
     private val auth = FirebaseAuth.getInstance()
     private val user = auth.currentUser
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val networkConnectivityObserver: ConnectivityObserver = NetworkConnectivityObserver(this)
+
+        workerRepository.syncData()
         if (user == null){
             startActivity(Intent(this, AuthActivity::class.java))
         } else {
             setContent {
-                val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
+                val networkStatus = networkConnectivityObserver.observe().collectAsState(initial = ConnectivityObserver.Status.Available).value
+                val homeScreenViewModel: HomeScreenViewModel = viewModel()
                 var theme = homeScreenViewModel.toggleSwitchState.collectAsState()
-                val connectivityObserver = NetworkConnectivityObserver(applicationContext)
                 ShopItTheme(
                     useDarkTheme = theme.value
                 ) {
@@ -80,7 +87,7 @@ class MainActivity : ComponentActivity() {
                                 startActivity(Intent(this, AuthActivity::class.java))
                             },
                             homeScreenViewModel = homeScreenViewModel,
-                            connectivityObserver = connectivityObserver
+                            networkStatus = networkStatus
                         )
                     }
                 }
@@ -96,12 +103,12 @@ class MainActivity : ComponentActivity() {
 fun ShopItApp(
     onLogOutClick: ()->Unit,
     homeScreenViewModel: HomeScreenViewModel,
-    connectivityObserver: ConnectivityObserver
+    networkStatus: ConnectivityObserver.Status
 ) {
     var isActive by remember {
         mutableStateOf(1)
     }
-    val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val cartScreenViewModel: CartScreenViewModel = viewModel()
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
@@ -128,8 +135,8 @@ fun ShopItApp(
             homeScreenViewModel = homeScreenViewModel,
             isActive = isActive,
             onLogOutClick = onLogOutClick,
-            connectivityObserver = connectivityObserver,
-            cartScreenViewModel = cartScreenViewModel
+            cartScreenViewModel = cartScreenViewModel,
+            networkStatus = networkStatus
         )
     }
 }

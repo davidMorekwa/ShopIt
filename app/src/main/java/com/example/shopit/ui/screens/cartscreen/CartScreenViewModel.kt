@@ -5,17 +5,19 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.remote.darajaApi.ApiServiceRepository
-import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
+import com.example.shopit.data.network.darajaApi.ApiServiceRepository
+import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.screens.productscreen.ProductViewUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-
-class CartScreenViewModel(private val repository: RemoteDatabaseRepository, private val apiServiceRepository: ApiServiceRepository): ViewModel() {
+@HiltViewModel
+class CartScreenViewModel @Inject constructor(private val remoteDatabaseRepository: RemoteDatabaseRepository, private val apiServiceRepository: ApiServiceRepository): ViewModel() {
     private var _cartScreenUiState:MutableStateFlow<List<CartViewUiState>> = MutableStateFlow(
         listOf()
     )
@@ -26,7 +28,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
         val cartProduct: CartViewUiState = this.toCartView(product)
         println("PRODUCT ${cartProduct.id} ADDED TO CART: Quantity = ${cartProduct.quantity}")
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addProductToCart(cartProduct)
+            remoteDatabaseRepository.addProductToCart(cartProduct)
         }
 
     }
@@ -39,7 +41,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     fun getProductsInCart() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.getProductsInCart().collect{
+                remoteDatabaseRepository.getProductsInCart().collect{
                     _cartScreenUiState.value = it
                 }
             } catch (e: Exception) {
@@ -52,7 +54,7 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     }
     fun removeProductFromCart(product: CartViewUiState){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.removeProductFromCart(product)
+            remoteDatabaseRepository.removeProductFromCart(product)
         }
     }
     suspend fun getAccessToken(): String? {
@@ -78,13 +80,13 @@ class CartScreenViewModel(private val repository: RemoteDatabaseRepository, priv
     }
     fun incrementProductQuantity(productID: String, quantity: String){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.changeQuantity(productID, quantity)
+            remoteDatabaseRepository.changeQuantity(productID, quantity)
             getProductsInCart()
         }
     }
     fun decrementProductQuantity(productID: String, quantity: String){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.changeQuantity(productId = productID, quantity = quantity)
+            remoteDatabaseRepository.changeQuantity(productId = productID, quantity = quantity)
             getProductsInCart()
         }
     }

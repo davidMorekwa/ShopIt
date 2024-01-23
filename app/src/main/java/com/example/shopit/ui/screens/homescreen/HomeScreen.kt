@@ -5,6 +5,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -72,6 +73,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -79,8 +81,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
+import com.example.shopit.R
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.network.ConnectivityObserver
+import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.authscreens.AuthViewModel
 import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
@@ -104,27 +107,12 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
     isActive: Int,
+    networkStatus: ConnectivityObserver.Status,
     modifier: Modifier = Modifier
         .fillMaxSize(),
-    connectivityObserver: ConnectivityObserver
+
 ) {
-    val networkStatus by connectivityObserver.observeConnection().collectAsState(
-        initial = ConnectivityObserver.Status.Available
-    )
-    when(networkStatus){
-        ConnectivityObserver.Status.Unavailable -> {
-            homeScreenViewModel.networkUnavailable()
-        }
-        ConnectivityObserver.Status.Available -> {
-            homeScreenViewModel.getInitialProducts()
-        }
-        ConnectivityObserver.Status.Lost -> {
-            TODO("Implement functionality when connection is lost")
-        }
-        ConnectivityObserver.Status.Losing -> {
-            TODO("Implement functionality when connection is losing")
-        }
-    }
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 //    val pagedProducts = homeScreenViewModel.pagedProducts.collectAsLazyPagingItems()
@@ -132,6 +120,32 @@ fun HomeScreen(
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
     var themeUiState = homeScreenViewModel.toggleSwitchState.collectAsState()
     var uiState = homeScreenViewModel.homeUiState.collectAsState()
+    println("Home ui state ${uiState.value}")
+    println("Network state: ${networkStatus}")
+    when(networkStatus){
+        ConnectivityObserver.Status.Unavailable -> {
+            /*
+            TODO:
+              1. Change UI based on network status
+              2. Prevent auto-initialization of workmanager
+             */
+            println("Executing network unavailable function")
+            homeScreenViewModel.networkUnavailable()
+        }
+        ConnectivityObserver.Status.Available -> {
+            println("Executing network available function")
+            homeScreenViewModel.getInitialProducts()
+        }
+        ConnectivityObserver.Status.Lost -> {
+            println("Executing network lost function")
+            homeScreenViewModel.networkUnavailable()
+//            uiState.value = HomeUiState.Error
+        }
+        ConnectivityObserver.Status.Losing -> {
+            TODO("Implement functionality when connection is losing")
+        }
+    }
+    println("Current network status ${networkStatus}")
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -257,7 +271,7 @@ fun HomeScreen(
 //                        )
                         when (uiState.value) {
                             is HomeUiState.Error -> ErrorScreen(
-                                onRetryClicked = { homeScreenViewModel.getInitialProducts() }
+                                onRetryClicked = { homeScreenViewModel.showOfflineData() }
                             )
                             is HomeUiState.Loading -> LoadingScreen()
                             is HomeUiState.Success -> {
@@ -268,7 +282,8 @@ fun HomeScreen(
                                         navController = navController,
                                         cartScreenViewModel = cartScreenViewModel,
                                         productScreenViewModel = productScreenViewModel,
-                                        categories = categories.value
+                                        categories = categories.value,
+                                        networkStatus = networkStatus
                                     )
                                 } else {
                                     Box(
@@ -344,6 +359,7 @@ fun PagedDataScreen(
     cartScreenViewModel: CartScreenViewModel,
     productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
+    networkStatus: ConnectivityObserver.Status,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -382,7 +398,8 @@ fun PagedDataScreen(
                         },
                         onAddToCartClick = {
                             cartScreenViewModel.addProductToCart(item)
-                        }
+                        },
+                        networkStatus = networkStatus
                     )
                 }
             }
@@ -400,6 +417,7 @@ fun SuccessScreen(
     cartScreenViewModel: CartScreenViewModel,
     productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
+    networkStatus: ConnectivityObserver.Status,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -435,7 +453,8 @@ fun SuccessScreen(
                     },
                     onAddToCartClick = {
                         cartScreenViewModel.addProductToCart(item)
-                    }
+                    },
+                    networkStatus = networkStatus
                 )
 
             }
@@ -465,6 +484,7 @@ fun CategoryItem(
 @Composable
 fun ProductItem(
     product: Product,
+    networkStatus: ConnectivityObserver.Status,
     onProductClick:(product: Product)-> Unit,
     onAddToCartClick: (product: Product)->Unit,
 ) {
@@ -506,15 +526,28 @@ fun ProductItem(
                 .fillMaxSize()
                 .padding(bottom = 5.dp)
         ) {
-            AsyncImage(
-                model = product.main_image,
-                contentDescription = "Product image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(15.dp))
-                    .size(120.dp)
-            )
+            if(networkStatus == ConnectivityObserver.Status.Available){
+                AsyncImage(
+                    model = product.main_image,
+                    contentDescription = "Product image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(15.dp))
+                        .size(120.dp)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.icons8_no_image_45___),
+                    contentDescription = "No Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(15.dp))
+                        .size(120.dp)
+                )
+            }
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier

@@ -24,8 +24,9 @@ import com.example.shopit.ui.screens.authscreens.AuthViewModel
 import com.example.shopit.ui.screens.authscreens.LoginScreen
 import com.example.shopit.ui.screens.authscreens.RegistrationScreen
 import com.example.shopit.ui.theme.ShopItTheme
-import com.example.shopit.viewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +59,7 @@ fun AuthenticationScreen(
     onSuccessfulRegistration:()->Unit
 ) {
     val navController = rememberNavController()
-    val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
+    val authViewModel: AuthViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = Screens.LANDING_SCREEN.name
