@@ -11,7 +11,7 @@ import com.example.shopit.R
 
 const val NOTIFICATION_CHANNEL_ID = "SYNC_NOTIFICATION"
 const val NOTIFICATION_CHANNEL_NAME = "Remote-Local Data Sync"
-const val NOTIFICATION_CONTENT_TITLE = "Data sync has started"
+const val NOTIFICATION_CONTENT_TITLE = "Data sync"
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun showSyncNotification(context: Context, message: String){

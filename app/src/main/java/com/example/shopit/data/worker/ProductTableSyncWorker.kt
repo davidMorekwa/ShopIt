@@ -26,11 +26,13 @@ class ProductTableSyncWorker(
                 val productList = remoteRepository.getInitialProducts()
                 val result = database.insertProducts(productList)
                 if (!result.isNullOrEmpty()) {
+                    Log.d("SYNC WORKER", "The background worker has finished successfully")
+                    showSyncNotification(applicationContext, "Sync has finished")
                     Result.success()
                 } else{
+                    Log.e("SYNC WORKER", "The background worker has an error")
                     Result.failure()
                 }
-                Result.success()
             } catch (e: Exception){
                 Log.e("DATA SYNC WORKER EXCEPTION", e.message!!)
                 Result.failure()

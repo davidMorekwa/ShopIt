@@ -5,7 +5,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -73,7 +72,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -81,7 +79,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
-import com.example.shopit.R
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
 import com.example.shopit.ui.screens.Screens
@@ -107,7 +104,7 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
     isActive: Int,
-    networkStatus: ConnectivityObserver.Status,
+//    networkStatus: ConnectivityObserver.Status,
     modifier: Modifier = Modifier
         .fillMaxSize(),
 
@@ -120,17 +117,12 @@ fun HomeScreen(
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
     var themeUiState = homeScreenViewModel.toggleSwitchState.collectAsState()
     var uiState = homeScreenViewModel.homeUiState.collectAsState()
+    var networkStatus = homeScreenViewModel.networkStatus.collectAsState().value
     println("Home ui state ${uiState.value}")
     println("Network state: ${networkStatus}")
-    when(networkStatus){
+    when(networkStatus.status){
         ConnectivityObserver.Status.Unavailable -> {
-            /*
-            TODO:
-              1. Change UI based on network status
-              2. Prevent auto-initialization of workmanager
-             */
             println("Executing network unavailable function")
-            homeScreenViewModel.networkUnavailable()
         }
         ConnectivityObserver.Status.Available -> {
             println("Executing network available function")
@@ -145,7 +137,6 @@ fun HomeScreen(
             TODO("Implement functionality when connection is losing")
         }
     }
-    println("Current network status ${networkStatus}")
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -283,22 +274,8 @@ fun HomeScreen(
                                         cartScreenViewModel = cartScreenViewModel,
                                         productScreenViewModel = productScreenViewModel,
                                         categories = categories.value,
-                                        networkStatus = networkStatus
+//                                        networkStatus = networkStatus
                                     )
-                                } else {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            CircularProgressIndicator(
-                                                color = MaterialTheme.colorScheme.tertiary
-                                            )
-                                            Text(text = "Loading...")
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -328,7 +305,7 @@ fun ErrorScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        Text(text = "An error has occurred when trying to get data! :(")
+        Text(text = "Please make sure you're connected to WIFI/Mobile Data")
         Button(onClick = onRetryClicked) {
             Text(text = "Retry")
         }
@@ -347,7 +324,7 @@ fun LoadingScreen(
         CircularProgressIndicator(
             color = Color.Blue
         )
-        Text(text = "Loading...")
+        Text(text = "Loading Data...")
     }
 }
 
@@ -399,7 +376,7 @@ fun PagedDataScreen(
                         onAddToCartClick = {
                             cartScreenViewModel.addProductToCart(item)
                         },
-                        networkStatus = networkStatus
+//                        networkStatus = networkStatus
                     )
                 }
             }
@@ -417,7 +394,7 @@ fun SuccessScreen(
     cartScreenViewModel: CartScreenViewModel,
     productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
-    networkStatus: ConnectivityObserver.Status,
+//    networkStatus: ConnectivityObserver.Status,
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
@@ -454,7 +431,7 @@ fun SuccessScreen(
                     onAddToCartClick = {
                         cartScreenViewModel.addProductToCart(item)
                     },
-                    networkStatus = networkStatus
+//                    networkStatus = networkStatus
                 )
 
             }
@@ -484,7 +461,7 @@ fun CategoryItem(
 @Composable
 fun ProductItem(
     product: Product,
-    networkStatus: ConnectivityObserver.Status,
+//    networkStatus: ConnectivityObserver.Status,
     onProductClick:(product: Product)-> Unit,
     onAddToCartClick: (product: Product)->Unit,
 ) {
@@ -526,27 +503,28 @@ fun ProductItem(
                 .fillMaxSize()
                 .padding(bottom = 5.dp)
         ) {
-            if(networkStatus == ConnectivityObserver.Status.Available){
-                AsyncImage(
-                    model = product.main_image,
-                    contentDescription = "Product image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(15.dp))
-                        .size(120.dp)
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.icons8_no_image_45___),
-                    contentDescription = "No Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(15.dp))
-                        .size(120.dp)
-                )
-            }
+            AsyncImage(
+                model = product.main_image,
+                contentDescription = "Product image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(15.dp))
+                    .size(120.dp)
+            )
+//            if(networkStatus == ConnectivityObserver.Status.Available){
+//
+//            } else {
+//                Image(
+//                    painter = painterResource(id = R.drawable.icons8_no_image_45___),
+//                    contentDescription = "No Image",
+//                    contentScale = ContentScale.Crop,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .clip(RoundedCornerShape(15.dp))
+//                        .size(120.dp)
+//                )
+//            }
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),

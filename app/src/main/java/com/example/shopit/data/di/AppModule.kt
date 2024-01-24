@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.shopit.auth.custom.AuthRepository
 import com.example.shopit.auth.custom.AuthRepositoryImpl
+import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
+import com.example.shopit.data.network.connectionObserver.NetworkConnectivityObserver
 import com.example.shopit.data.network.darajaApi.ApiServiceRepository
 import com.example.shopit.data.network.darajaApi.DarajaApiService
 import com.example.shopit.data.network.darajaApi.DefaultApiServiceRepository
@@ -104,4 +106,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMyWorkerFactory(remoteDatabaseRepository: RemoteDatabaseRepository, localDatabaseRepository: LocalDatabaseRepository): MyWorkerFactory = MyWorkerFactory(remoteDatabaseRepository, localDatabaseRepository)
+
+    @Singleton
+    @Provides
+    fun provideNetworkStatus(@ApplicationContext context: Context): ConnectivityObserver = NetworkConnectivityObserver(context)
 }
