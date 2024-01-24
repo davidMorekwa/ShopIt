@@ -35,7 +35,7 @@ fun NavGraph(
     isActive: Int,
     onLogOutClick: ()-> Unit,
     cartScreenViewModel: CartScreenViewModel,
-    networkStatus: ConnectivityObserver.Status
+//    networkStatus: ConnectivityObserver.Status
 ) {
     val productScreenViewModel: ProductScreenViewModel = viewModel()
     val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel()
@@ -71,7 +71,7 @@ fun NavGraph(
                 onLogOutClick = onLogOutClick,
                 favoriteScreenViewModel = favoriteScreenViewModel,
                 productScreenViewModel = productScreenViewModel,
-                networkStatus = networkStatus
+//                networkStatus = networkStatus
             )
         }
         composable(

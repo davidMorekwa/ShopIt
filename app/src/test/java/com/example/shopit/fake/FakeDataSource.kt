@@ -3,6 +3,7 @@ package com.example.shopit.fake
 import com.example.shopit.data.model.OAuthResponse
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.screens.cartscreen.CartViewUiState
+import kotlinx.coroutines.flow.flowOf
 
 object FakeDataSource {
     const val idOne = "img1"
@@ -14,6 +15,28 @@ object FakeDataSource {
     const val urlThree = "img.3"
     const val urlFour = "img.4"
     val productList = listOf(
+        Product(
+            _id = idOne,
+            main_image = urlOne,
+            primary_category = "Toys"
+        ),
+        Product(
+            _id = idTwo,
+            main_image = urlTwo,
+            primary_category = "Electronics"
+        ),
+        Product(
+            _id = idThree,
+            main_image = urlThree,
+            primary_category = "Toys",
+        ),
+        Product(
+            _id = idFour,
+            main_image = urlFour,
+            primary_category = "Electronics",
+        )
+    )
+    val localProductList = flowOf(
         Product(
             _id = idOne,
             main_image = urlOne,

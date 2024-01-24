@@ -65,14 +65,14 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val networkConnectivityObserver: ConnectivityObserver = NetworkConnectivityObserver(this)
+//        val networkConnectivityObserver: ConnectivityObserver = NetworkConnectivityObserver(this)
 
         workerRepository.syncData()
         if (user == null){
             startActivity(Intent(this, AuthActivity::class.java))
         } else {
             setContent {
-                val networkStatus = networkConnectivityObserver.observe().collectAsState(initial = ConnectivityObserver.Status.Available).value
+//                val networkStatus = networkConnectivityObserver.observe().collectAsState(initial = ConnectivityObserver.Status.Available).value
                 val homeScreenViewModel: HomeScreenViewModel = viewModel()
                 var theme = homeScreenViewModel.toggleSwitchState.collectAsState()
                 ShopItTheme(
@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                                 startActivity(Intent(this, AuthActivity::class.java))
                             },
                             homeScreenViewModel = homeScreenViewModel,
-                            networkStatus = networkStatus
+//                            networkStatus = networkStatus
                         )
                     }
                 }
@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
 fun ShopItApp(
     onLogOutClick: ()->Unit,
     homeScreenViewModel: HomeScreenViewModel,
-    networkStatus: ConnectivityObserver.Status
+//    networkStatus: ConnectivityObserver.Status
 ) {
     var isActive by remember {
         mutableStateOf(1)
@@ -136,7 +136,7 @@ fun ShopItApp(
             isActive = isActive,
             onLogOutClick = onLogOutClick,
             cartScreenViewModel = cartScreenViewModel,
-            networkStatus = networkStatus
+//            networkStatus = networkStatus
         )
     }
 }
