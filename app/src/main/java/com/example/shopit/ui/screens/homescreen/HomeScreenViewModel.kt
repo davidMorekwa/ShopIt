@@ -14,14 +14,15 @@ import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.local.ProductEntity
 import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
@@ -35,42 +36,60 @@ class HomeScreenViewModel @Inject constructor(
     private val remoteDatabaseRepository: RemoteDatabaseRepository,
     private val localDatabaseRepository: LocalDatabaseRepository,
     private val dataStore: DataStore<Preferences>,
-    private val connectivityObserver: ConnectivityObserver
+    private var connectivityObserver: ConnectivityObserver
 ):ViewModel() {
     var networkStatus: StateFlow<NetworkState> = connectivityObserver.observe().map {
-            it -> NetworkState(it)
+        println("Home screen viewmodel network ${it.name}")
+        NetworkState(it)
     }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(TIMEOUT_MILLS),
             NetworkState(status = ConnectivityObserver.Status.Unavailable)
         )
-    private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
+    private var _homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Success(
+        listOf()
+    ))
     var homeUiState = _homeUiState.asStateFlow()
     private var _categoryList: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
     val categoryList = _categoryList.asStateFlow()
     private var _toggleSwitchState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val toggleSwitchState = _toggleSwitchState.asStateFlow()
-
-
-
-
     companion object{
         const val TIMEOUT_MILLS = 2000L
     }
     init {
-        getTheme()
-        println("Getting products")
+        viewModelScope.launch {
+            getTheme()
+            println("Getting products")
+
+            networkStatus.collectLatest{ state ->
+                Log.i("HOME SCREEN VIEWMODEL NETWORK", state.status.name)
+                when (state.status) {
+                    ConnectivityObserver.Status.Available -> {
+                        println("Executing network available function")
+                        getInitialProducts()
+                    }
+
+                    ConnectivityObserver.Status.Lost -> {
+                        println("Executing network lost function")
+                        showOfflineData()
+                    }
+
+                    else -> {null}
+                }
+            }
+        }
     }
     private fun getTheme() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             _toggleSwitchState.value = dataStore.data
                 .map { value: Preferences -> value[PreferenceKeys.USE_DARK_THEME] ?: false }
                 .first()
         }
     }
     fun changeTheme(status: Boolean){
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             _toggleSwitchState.value = status
             dataStore.edit { mutablePreferences: MutablePreferences ->
                 mutablePreferences[PreferenceKeys.USE_DARK_THEME] = status
@@ -93,12 +112,14 @@ class HomeScreenViewModel @Inject constructor(
         return tempCategoryList.toList()
     }
     fun getInitialProducts() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
+            _homeUiState.value = HomeUiState.Success(emptyList())
             try{
-                var products = remoteDatabaseRepository.getInitialProducts()
+                val products = remoteDatabaseRepository.getInitialProducts()
                 println("PRODUCTS ${products.size}")
-//                storeLocally(products)
-                _homeUiState.value = HomeUiState.Success(products)
+                _homeUiState.update { currState ->
+                    HomeUiState.Success(products)
+                }
 
             } catch (e: IOException){
                 Log.e("ERROR", e.message.toString())
@@ -108,7 +129,7 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
     fun filterProductsByCategory(category: String){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             if(category == "All"){
                 getInitialProducts()
             }
@@ -128,9 +149,8 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
     fun showOfflineData(){
-        viewModelScope.launch(Dispatchers.IO) {
-            _homeUiState.value = HomeUiState.Loading
-            println("On retry click")
+        viewModelScope.launch() {
+//            _homeUiState.value = HomeUiState.Loading
             Log.i("SHOW OFFLINE DATA LOG", "started")
             try {
 //                val products = localDatabaseRepository.getAllProducts()

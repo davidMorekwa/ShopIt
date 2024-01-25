@@ -1,7 +1,6 @@
 package com.example.shopit
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.shopit.data.model.Product
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 
@@ -10,23 +9,6 @@ import org.junit.runner.RunWith
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-const val idOne = "img1"
-const val idTwo = "img2"
-const val urlOne = "img.1"
-const val urlTwo = "img.2"
-val productList = listOf(
-    Product(
-        _id = idOne,
-        main_image = urlOne,
-        primary_category = "Toys"
-    ),
-    Product(
-        _id = idTwo,
-        main_image = urlTwo,
-        primary_category = "Electronics"
-    )
-)
-val categories = listOf<String>("All", "Toys", "Household")
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
 //    lateinit var repository: RemoteDatabaseRepository

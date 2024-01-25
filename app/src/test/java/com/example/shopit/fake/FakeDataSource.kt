@@ -3,18 +3,25 @@ package com.example.shopit.fake
 import com.example.shopit.data.model.OAuthResponse
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.screens.cartscreen.CartViewUiState
-import kotlinx.coroutines.flow.flowOf
 
 object FakeDataSource {
     const val idOne = "img1"
     const val idTwo = "img2"
     const val idThree = "img3"
     const val idFour = "img4"
+    const val idFive = "img5"
+    const val idSix = "img6"
+    const val idSeven = "img7"
+    const val idEight = "img8"
     const val urlOne = "img.1"
     const val urlTwo = "img.2"
     const val urlThree = "img.3"
     const val urlFour = "img.4"
-    val productList = listOf(
+    const val urlFive = "img.5"
+    const val urlSix = "img.6"
+    const val urlSeven = "img.7"
+    const val urlEight = "img.8"
+    val remoteProductList = listOf(
         Product(
             _id = idOne,
             main_image = urlOne,
@@ -36,25 +43,25 @@ object FakeDataSource {
             primary_category = "Electronics",
         )
     )
-    val localProductList = flowOf(
+    val localProductList = listOf(
         Product(
-            _id = idOne,
-            main_image = urlOne,
+            _id = idFive,
+            main_image = urlFive,
             primary_category = "Toys"
         ),
         Product(
-            _id = idTwo,
-            main_image = urlTwo,
+            _id = idSix,
+            main_image = urlSix,
             primary_category = "Electronics"
         ),
         Product(
-            _id = idThree,
-            main_image = urlThree,
+            _id = idSeven,
+            main_image = urlSeven,
             primary_category = "Toys",
         ),
         Product(
-            _id = idFour,
-            main_image = urlFour,
+            _id = idEight,
+            main_image = urlEight,
             primary_category = "Electronics",
         )
     )
