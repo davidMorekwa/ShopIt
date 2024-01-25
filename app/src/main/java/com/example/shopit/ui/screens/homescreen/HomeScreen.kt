@@ -57,6 +57,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -117,24 +118,14 @@ fun HomeScreen(
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
     var themeUiState = homeScreenViewModel.toggleSwitchState.collectAsState()
     var uiState = homeScreenViewModel.homeUiState.collectAsState()
-    var networkStatus = homeScreenViewModel.networkStatus.collectAsState().value
-    println("Home ui state ${uiState.value}")
-    println("Network state: ${networkStatus}")
-    when(networkStatus.status){
-        ConnectivityObserver.Status.Unavailable -> {
-            println("Executing network unavailable function")
-        }
-        ConnectivityObserver.Status.Available -> {
-            println("Executing network available function")
-            homeScreenViewModel.getInitialProducts()
-        }
-        ConnectivityObserver.Status.Lost -> {
-            println("Executing network lost function")
-            homeScreenViewModel.networkUnavailable()
-//            uiState.value = HomeUiState.Error
-        }
-        ConnectivityObserver.Status.Losing -> {
-            TODO("Implement functionality when connection is losing")
+    val ctx = LocalContext.current
+    var networkStatus = homeScreenViewModel.networkStatus.collectAsState()
+    LaunchedEffect(key1 = networkStatus.value.status){
+        if (networkStatus.value.status == ConnectivityObserver.Status.Unavailable){
+            Toast.makeText(ctx, "No internet connection", Toast.LENGTH_SHORT).show()
+        } else if(networkStatus.value.status == ConnectivityObserver.Status.Lost){
+            Toast.makeText(ctx, "Internet connection lost", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, "Showing offline data", Toast.LENGTH_SHORT).show()
         }
     }
     Scaffold(
@@ -239,7 +230,7 @@ fun HomeScreen(
                         Switch(
                             checked = themeUiState.value,
                             onCheckedChange = {
-                                homeScreenViewModel.changeTheme(it)
+//                                homeScreenViewModel.changeTheme(it)
                             }
                         )
                     }
@@ -262,9 +253,9 @@ fun HomeScreen(
 //                        )
                         when (uiState.value) {
                             is HomeUiState.Error -> ErrorScreen(
-                                onRetryClicked = { homeScreenViewModel.showOfflineData() }
+                                onRetryClicked = { homeScreenViewModel.getInitialProducts() }
                             )
-                            is HomeUiState.Loading -> LoadingScreen()
+//                            is HomeUiState.Loading -> LoadingScreen()
                             is HomeUiState.Success -> {
                                 if ((uiState.value as HomeUiState.Success).products.isNotEmpty()) {
                                     SuccessScreen(
@@ -274,8 +265,21 @@ fun HomeScreen(
                                         cartScreenViewModel = cartScreenViewModel,
                                         productScreenViewModel = productScreenViewModel,
                                         categories = categories.value,
-//                                        networkStatus = networkStatus
+//                                        networkStatus = networkStatus.value.status
                                     )
+                                } else {
+                                    Column(
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = modifier
+                                    ) {
+
+
+                                        CircularProgressIndicator(
+                                            color = Color.Blue
+                                        )
+                                        Text(text = "Loading Data...")
+                                    }
                                 }
                             }
                         }
@@ -512,20 +516,6 @@ fun ProductItem(
                     .clip(RoundedCornerShape(15.dp))
                     .size(120.dp)
             )
-//            if(networkStatus == ConnectivityObserver.Status.Available){
-//
-//            } else {
-//                Image(
-//                    painter = painterResource(id = R.drawable.icons8_no_image_45___),
-//                    contentDescription = "No Image",
-//                    contentScale = ContentScale.Crop,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(15.dp))
-//                        .size(120.dp)
-//                )
-//            }
-
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier

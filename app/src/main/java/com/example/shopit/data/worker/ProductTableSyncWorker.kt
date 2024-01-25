@@ -20,7 +20,7 @@ class ProductTableSyncWorker(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
         showSyncNotification(applicationContext, "Sync has started")
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.Default){
             return@withContext try{
                 Log.d("SYNC WORKER", "The background worker has started")
                 val productList = remoteRepository.getInitialProducts()
