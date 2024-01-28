@@ -1,6 +1,5 @@
 package com.example.shopit.data.model
 
-import com.example.shopit.data.repositories.local.ProductEntity
 import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 
 data class Product(

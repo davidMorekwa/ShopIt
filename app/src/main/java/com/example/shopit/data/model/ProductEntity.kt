@@ -1,8 +1,7 @@
-package com.example.shopit.data.repositories.local
+package com.example.shopit.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.shopit.data.model.Product
 
 @Entity(tableName = "table_products")
 data class ProductEntity(
