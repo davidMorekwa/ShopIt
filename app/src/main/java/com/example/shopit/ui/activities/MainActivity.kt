@@ -45,21 +45,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
-import com.example.shopit.data.network.connectionObserver.NetworkConnectivityObserver
-import com.example.shopit.data.worker.WorkerRepository
 import com.example.shopit.ui.naivigation.NavGraph
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
 import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
 import com.example.shopit.ui.theme.ShopItTheme
 import com.google.firebase.auth.FirebaseAuth
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var workerRepository: WorkerRepository
     private val auth = FirebaseAuth.getInstance()
     private val user = auth.currentUser
     @RequiresApi(Build.VERSION_CODES.O)
@@ -67,7 +60,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 //        val networkConnectivityObserver: ConnectivityObserver = NetworkConnectivityObserver(this)
 
-        workerRepository.syncData()
         if (user == null){
             startActivity(Intent(this, AuthActivity::class.java))
         } else {

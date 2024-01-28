@@ -3,7 +3,7 @@ package com.example.shopit.data.repositories.remote
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.shopit.data.local.ShopitDatabase
+import com.example.shopit.data.repositories.local.ShopitDatabase
 import com.example.shopit.data.model.Product
 import com.google.firebase.database.DatabaseReference
 

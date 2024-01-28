@@ -2,7 +2,6 @@ package com.example.shopit.viewmodel
 
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
-import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import com.example.shopit.fake.FakeConnectivityObserver
 import com.example.shopit.fake.FakeDataSource

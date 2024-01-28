@@ -18,10 +18,9 @@ object viewModelProvider {
     val factory = viewModelFactory {
         initializer {
             HomeScreenViewModel(
-                repository = shopItApplication().container.remoteDatabaseRepository,
+                remoteDatabaseRepository = shopItApplication().container.remoteDatabaseRepository,
                 dataStore = shopItApplication().container.dataStoreInstance,
-//                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
-                context = shopItApplication().applicationContext,
+                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
                 roomPager = shopItApplication().container.roomPager
             )
         }

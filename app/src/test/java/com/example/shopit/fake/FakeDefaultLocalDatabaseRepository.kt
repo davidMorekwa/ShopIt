@@ -1,7 +1,6 @@
 package com.example.shopit.fake
 
 import com.example.shopit.data.model.Product
-import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.local.ProductEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

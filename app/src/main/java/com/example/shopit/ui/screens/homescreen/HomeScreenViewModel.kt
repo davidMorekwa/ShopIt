@@ -1,8 +1,6 @@
 package com.example.shopit.ui.screens.homescreen
 
 
-import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -16,29 +14,22 @@ import com.example.shopit.data.model.ProductEntity
 import com.example.shopit.data.network.darajaApi.PreferenceKeys
 import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /*
 TODO: Create a DataRepository class that will get data from the local and remote repositories
  */
 
-class HomeScreenViewModel (
+class HomeScreenViewModel(
     private val remoteDatabaseRepository: RemoteDatabaseRepository,
     private val localDatabaseRepository: LocalDatabaseRepository,
     private val dataStore: DataStore<Preferences>,
 //    private val localDatabaseRepository: LocalDatabaseRepository,
-    private val roomPager: Pager<Int, ProductEntity>,
-    private val context: Context
+    private val roomPager: Pager<Int, ProductEntity>
 ):ViewModel() {
     val res = roomPager.flow
         .cachedIn(viewModelScope)

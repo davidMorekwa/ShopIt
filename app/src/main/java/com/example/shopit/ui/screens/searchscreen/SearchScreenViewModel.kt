@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.cachedIn
-import com.example.shopit.data.local.LocalDatabaseRepository
 import com.example.shopit.data.model.CategoryEntity
 import com.example.shopit.data.model.Product
+import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

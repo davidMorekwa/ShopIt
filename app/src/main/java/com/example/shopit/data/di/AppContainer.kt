@@ -9,19 +9,17 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.shopit.auth.custom.AuthRepository
 import com.example.shopit.auth.custom.AuthRepositoryImpl
-import com.example.shopit.data.local.DefaultLocalDatabaseRepository
-import com.example.shopit.data.local.LocalDatabaseRepository
-import com.example.shopit.data.local.ShopitDatabase
 import com.example.shopit.data.model.CategoryEntity
 import com.example.shopit.data.model.ProductEntity
-import com.example.shopit.data.remote.darajaApi.ApiServiceRepository
-import com.example.shopit.data.remote.darajaApi.DarajaApiService
-import com.example.shopit.data.remote.darajaApi.DefaultApiServiceRepository
-import com.example.shopit.data.remote.repository.DefaultDatabaseRepository
+import com.example.shopit.data.network.darajaApi.ApiServiceRepository
+import com.example.shopit.data.network.darajaApi.DarajaApiService
+import com.example.shopit.data.network.darajaApi.DefaultApiServiceRepository
 import com.example.shopit.data.remote.repository.FirebaseRemoteMediator
-import com.example.shopit.data.remote.repository.RemoteDatabaseRepository
-import com.example.shopit.data.worker.DefaultWorkerRepository
-import com.example.shopit.data.worker.WorkerRepository
+import com.example.shopit.data.repositories.local.DefaultLocalDatabaseRepository
+import com.example.shopit.data.repositories.local.LocalDatabaseRepository
+import com.example.shopit.data.repositories.local.ShopitDatabase
+import com.example.shopit.data.repositories.remote.DefaultRemoteDatabaseRepository
+import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -37,7 +35,6 @@ interface AppContainer{
     val authRepository: AuthRepository
     val dataStoreInstance: DataStore<Preferences>
     val localDatabaseRepository: LocalDatabaseRepository
-    val workerRepository: WorkerRepository
 //    val firebasePager: Pager<String, Product>
     val roomPager: Pager<Int, ProductEntity>
     val categoryPager: Pager<Int, CategoryEntity>
@@ -64,7 +61,7 @@ class DefaultAppContainer(
         retrofit.create(DarajaApiService::class.java)
     }
     override val remoteDatabaseRepository: RemoteDatabaseRepository by lazy {
-        DefaultDatabaseRepository(database = database)
+        DefaultRemoteDatabaseRepository(database = database)
     }
     private val Context.dataStore by preferencesDataStore(
         name = TOKEN_PREFERENCE_NAME
@@ -81,7 +78,6 @@ class DefaultAppContainer(
     override val localDatabaseRepository: LocalDatabaseRepository by lazy {
         DefaultLocalDatabaseRepository(shopitDatabase.productsDao())
     }
-    override val workerRepository: WorkerRepository = DefaultWorkerRepository(context)
 //    @OptIn(ExperimentalPagingApi::class)
 //    override val firebasePager: Pager<String, Product>
 //        get() = Pager(

@@ -83,7 +83,6 @@ import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.model.ProductEntity
-import com.example.shopit.data.network.ConnectivityObserver
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.authscreens.AuthViewModel
 import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
@@ -110,11 +109,7 @@ fun HomeScreen(
     isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize(),
-    connectivityObserver: ConnectivityObserver
 ) {
-    val networkStatus by connectivityObserver.observeConnection().collectAsState(
-        initial = ConnectivityObserver.Status.Available
-    )
 //    when(networkStatus){
 //        ConnectivityObserver.Status.Unavailable -> {
 //            homeScreenViewModel.networkUnavailable()
