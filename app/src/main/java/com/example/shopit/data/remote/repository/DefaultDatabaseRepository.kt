@@ -1,5 +1,6 @@
 package com.example.shopit.data.remote.repository
 
+import android.util.Log
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.screens.cartscreen.CartViewUiState
 import com.example.shopit.ui.screens.productscreen.ProductViewUiState
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 
@@ -23,20 +25,24 @@ class DefaultDatabaseRepository(private val database: FirebaseDatabase) : Remote
     private val cartRef = database.getReference("Cart")
     private val favoriteRef = database.getReference("Favorites")
     private var userId = FirebaseAuth.getInstance().currentUser?.uid
-    override suspend fun getInitialProducts(): List<Product> {
-        return suspendCoroutine { continuation: Continuation<List<Product>> ->
-            var productMutableList: MutableList<Product> = mutableListOf()
-            productsRef.limitToFirst(30).addValueEventListener(object: ValueEventListener{
+    private var lastKey: String? = null
+    override suspend fun getInitialProducts(pageSize: Int, lastItemId: String?): List<Product> {
+        return suspendCoroutine { continuation ->
+            val query = if (lastItemId == null) {
+                Log.d("REMOTE REPOSITORY", "Last item id is null")
+                productsRef.orderByChild("_id").limitToFirst(pageSize)
+            } else {
+                productsRef.orderByChild("_id").startAfter(lastItemId).limitToFirst(pageSize)
+            }
+
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    for (snap in snapshot.children) {
-                        var product = snap.getValue<Product>()
-                        product?.let { productMutableList.add(it) }
-                    }
-                    continuation.resume(productMutableList)
+                    val products = snapshot.children.mapNotNull { it.getValue(Product::class.java) }
+                    continuation.resume(products)
                 }
+
                 override fun onCancelled(error: DatabaseError) {
-                    println("SEARCH ERROR!!!")
-                    println(error.message)
+                    continuation.resumeWithException(error.toException())
                 }
             })
         }

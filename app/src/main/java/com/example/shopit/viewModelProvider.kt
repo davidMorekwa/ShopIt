@@ -12,6 +12,7 @@ import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
 import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
 import com.example.shopit.ui.screens.searchscreen.SearchScreenViewModel
 import com.example.shopit.ui.screens.settingsscreen.SettingsScreenViewModel
+import com.example.shopit.ui.screens.temp.TempViewModel
 
 object viewModelProvider {
     val factory = viewModelFactory {
@@ -20,14 +21,22 @@ object viewModelProvider {
                 repository = shopItApplication().container.remoteDatabaseRepository,
                 dataStore = shopItApplication().container.dataStoreInstance,
 //                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
-                context = shopItApplication().applicationContext
+                context = shopItApplication().applicationContext,
+                roomPager = shopItApplication().container.roomPager
             )
+        }
+        initializer {
+            TempViewModel()
         }
         initializer {
             ProductScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
         }
         initializer {
-            SearchScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
+            SearchScreenViewModel(
+                repository =  shopItApplication().container.remoteDatabaseRepository,
+                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
+                categoryPager = shopItApplication().container.categoryPager
+            )
         }
         initializer {
             CartScreenViewModel(shopItApplication().container.remoteDatabaseRepository, shopItApplication().container.apiServiceRepository)

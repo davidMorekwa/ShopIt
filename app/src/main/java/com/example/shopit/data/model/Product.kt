@@ -1,6 +1,5 @@
 package com.example.shopit.data.model
 
-import com.example.shopit.data.local.ProductEntity
 import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 
 data class Product(
@@ -33,7 +32,7 @@ data class Product(
             specifications = product.speciications
         )
     }
-    fun toProductEntity(): ProductEntity{
+    fun toProductEntity(): ProductEntity {
         return ProductEntity(
             id = _id!!,
             title = title!!,

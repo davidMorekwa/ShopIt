@@ -253,7 +253,8 @@ fun RegistrationScreen(
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     ) {
                         Text(text = "Already have an account? ")
                         Text(

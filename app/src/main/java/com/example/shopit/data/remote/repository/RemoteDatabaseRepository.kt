@@ -6,7 +6,7 @@ import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteDatabaseRepository {
-    suspend fun getInitialProducts() : List<Product>
+    suspend fun getInitialProducts(pageSize: Int, lastItemId: String?) : List<Product>
     suspend fun search(string: String): List<Product>
     suspend fun addProductToCart(product: CartViewUiState)
     suspend fun removeProductFromCart(product: CartViewUiState)

@@ -1,18 +1,21 @@
 package com.example.shopit
 
 import android.app.Application
-import com.example.shopit.data.AppContainer
-import com.example.shopit.data.DefaultAppContainer
+import com.example.shopit.data.di.AppContainer
+import com.example.shopit.data.di.DefaultAppContainer
 
 class ShopitApplication:Application() {
     lateinit var container: AppContainer
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer(applicationContext)
-//        val config = Configuration.Builder()
-//            .setWorkerFactory(WorkerFactory(repository = container.remoteDatabaseRepository, database = container.localDatabaseRepository))
-//            .build()
-//
-//        WorkManager.initialize(this, config)
+        container = DefaultAppContainer(this)
+//        WorkManager.initialize(this, workManagerConfiguration)
     }
+
+//    override fun getWorkManagerConfiguration(): Configuration {
+//        return Configuration.Builder()
+//            .setWorkerFactory(WorkerFactory(repository = container.remoteDatabaseRepository, database = container.localDatabaseRepository))
+//            .setMinimumLoggingLevel(android.util.Log.INFO)
+//            .build()
+//    }
 }

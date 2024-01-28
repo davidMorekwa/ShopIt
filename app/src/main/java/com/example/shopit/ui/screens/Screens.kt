@@ -8,4 +8,5 @@ enum class Screens {
     CART_SCREEN,
     LOGIN_SCREEN,
     REGISTRATION_SCREEN,
+    TEMP_SCREEN
 }

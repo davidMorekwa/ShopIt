@@ -4,7 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.devtools.ksp").version("1.6.0-1.0.1")
-//    id("kotlin-kapt")
+    id("kotlin-kapt")
 }
 
 android {
@@ -34,11 +34,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -86,18 +86,25 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.0")
+    // retrofit & moshi
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.12.0")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
+    // gson
     implementation ("com.google.code.gson:gson:2.10.1")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     implementation("com.androidstudy.daraja:daraja:2.0.2")
+    // preference datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    //paging
     implementation("androidx.paging:paging-compose:3.2.1")
     implementation("androidx.paging:paging-runtime-ktx:3.2.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.0")
+    // room
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.room:room-paging:2.6.1")
+    //work manager
     implementation("androidx.work:work-runtime-ktx:2.8.1")
 }

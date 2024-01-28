@@ -21,11 +21,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -77,9 +75,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.example.shopit.data.model.Product
+import com.example.shopit.data.model.ProductEntity
 import com.example.shopit.data.network.ConnectivityObserver
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.authscreens.AuthViewModel
@@ -103,6 +106,7 @@ fun HomeScreen(
     productScreenViewModel: ProductScreenViewModel,
     authViewModel: AuthViewModel,
     onLogOutClick: ()->Unit,
+//    data: LazyPagingItems<Product>,
     isActive: Int,
     modifier: Modifier = Modifier
         .fillMaxSize(),
@@ -111,27 +115,31 @@ fun HomeScreen(
     val networkStatus by connectivityObserver.observeConnection().collectAsState(
         initial = ConnectivityObserver.Status.Available
     )
-    when(networkStatus){
-        ConnectivityObserver.Status.Unavailable -> {
-            homeScreenViewModel.networkUnavailable()
-        }
-        ConnectivityObserver.Status.Available -> {
-            homeScreenViewModel.getInitialProducts()
-        }
-        ConnectivityObserver.Status.Lost -> {
-            TODO("Implement functionality when connection is lost")
-        }
-        ConnectivityObserver.Status.Losing -> {
-            TODO("Implement functionality when connection is losing")
-        }
-    }
+//    when(networkStatus){
+//        ConnectivityObserver.Status.Unavailable -> {
+//            homeScreenViewModel.networkUnavailable()
+//        }
+//        ConnectivityObserver.Status.Available -> {
+//            homeScreenViewModel.getInitialProducts()
+//        }
+//        ConnectivityObserver.Status.Lost -> {
+//            TODO("Implement functionality when connection is lost")
+//        }
+//        ConnectivityObserver.Status.Losing -> {
+//            TODO("Implement functionality when connection is losing")
+//        }
+//    }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 //    val pagedProducts = homeScreenViewModel.pagedProducts.collectAsLazyPagingItems()
-    var categories = homeScreenViewModel.categoryList.collectAsState()
+//    var categories = homeScreenViewModel.categoryList.collectAsState()
+
     val selectedItem = remember { mutableStateOf(menuItems[0].id) }
     var themeUiState = homeScreenViewModel.toggleSwitchState.collectAsState()
-    var uiState = homeScreenViewModel.homeUiState.collectAsState()
+//    var uiState = homeScreenViewModel.homeUiState.collectAsState()
+    var uiState = homeScreenViewModel.res.collectAsLazyPagingItems()
+
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -255,38 +263,50 @@ fun HomeScreen(
 //                            productScreenViewModel = productScreenViewModel,
 //                            categories = categories.value
 //                        )
-                        when (uiState.value) {
-                            is HomeUiState.Error -> ErrorScreen(
-                                onRetryClicked = { homeScreenViewModel.getInitialProducts() }
+                        if (uiState.loadState.refresh == LoadState.Loading){
+                            LoadingScreen()
+                        } else {
+                            SuccessScreen(
+                                products = uiState,
+                                categories = listOf("Toys", "Electronics"),
+                                viewModel = homeScreenViewModel,
+                                navController = navController,
+                                cartScreenViewModel = cartScreenViewModel,
+                                productScreenViewModel = productScreenViewModel,
                             )
-                            is HomeUiState.Loading -> LoadingScreen()
-                            is HomeUiState.Success -> {
-                                if ((uiState.value as HomeUiState.Success).products.isNotEmpty()) {
-                                    SuccessScreen(
-                                        products = (uiState.value as HomeUiState.Success).products,
-                                        viewModel = homeScreenViewModel,
-                                        navController = navController,
-                                        cartScreenViewModel = cartScreenViewModel,
-                                        productScreenViewModel = productScreenViewModel,
-                                        categories = categories.value
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            CircularProgressIndicator(
-                                                color = MaterialTheme.colorScheme.tertiary
-                                            )
-                                            Text(text = "Loading...")
-                                        }
-                                    }
-                                }
-                            }
                         }
+//                        when (uiState.loadState) {
+//                            HomeUiState.Error -> ErrorScreen(
+//                                onRetryClicked = { homeScreenViewModel.getInitialProducts() }
+//                            )
+//                            LoadState.Loading -> LoadingScreen()
+//                            is HomeUiState.Success -> {
+//                                if ((uiState.value as HomeUiState.Success).products.isNotEmpty()) {
+//                                    SuccessScreen(
+//                                        products = (uiState.value as HomeUiState.Success).products,
+//                                        viewModel = homeScreenViewModel,
+//                                        navController = navController,
+//                                        cartScreenViewModel = cartScreenViewModel,
+//                                        productScreenViewModel = productScreenViewModel,
+//                                        categories = categories.value
+//                                    )
+//                                } else {
+//                                    Box(
+//                                        modifier = Modifier.fillMaxSize(),
+//                                        contentAlignment = Alignment.Center
+//                                    ) {
+//                                        Column(
+//                                            horizontalAlignment = Alignment.CenterHorizontally
+//                                        ) {
+//                                            CircularProgressIndicator(
+//                                                color = MaterialTheme.colorScheme.tertiary
+//                                            )
+//                                            Text(text = "Loading...")
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
 
                     }
                 }
@@ -336,65 +356,10 @@ fun LoadingScreen(
     }
 }
 
-@Composable
-fun PagedDataScreen(
-    products: LazyPagingItems<Product>,
-    categories: List<String>,
-    viewModel: HomeScreenViewModel,
-    cartScreenViewModel: CartScreenViewModel,
-    productScreenViewModel: ProductScreenViewModel,
-    navController: NavController,
-    modifier: Modifier = Modifier
-        .fillMaxSize()
-) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(start = 8.dp)
-        ) {
-            items(categories) { category: String ->
-                CategoryItem(
-                    category = category,
-                    onCategoryClick = { viewModel.filterProductsByCategory(category) }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 150.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
-            items(
-                count = products.itemCount,
-
-            ){ index: Int ->
-                val prod = products[index]
-                prod?.let { item ->
-                    ProductItem(
-                        product = item,
-                        onProductClick = {
-                            productScreenViewModel.getProduct(item.toProductViewUiState(item))
-                            navController.navigate(Screens.PRODUCT_SCREEN.name)
-                        },
-                        onAddToCartClick = {
-                            cartScreenViewModel.addProductToCart(item)
-                        }
-                    )
-                }
-            }
-        }
-
-    }
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SuccessScreen(
-    products: List<Product>,
+    products: LazyPagingItems<ProductEntity>,
     categories: List<String>,
     viewModel: HomeScreenViewModel,
     cartScreenViewModel: CartScreenViewModel,
@@ -403,40 +368,35 @@ fun SuccessScreen(
     modifier: Modifier = Modifier
         .fillMaxSize()
 ) {
+    val gridState = rememberLazyGridState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(start = 8.dp)
-        ) {
-            items(categories) { category: String ->
-                CategoryItem(
-                    category = category,
-                    onCategoryClick = { viewModel.filterProductsByCategory(category) }
-                )
-            }
-        }
         Spacer(modifier = Modifier.height(12.dp))
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 150.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = gridState
         ) {
-            items(products) { item: Product ->
-                ProductItem(
-                    product = item,
-                    onProductClick = {
-                            productScreenViewModel.getProduct(item.toProductViewUiState(item))
+            items(
+                count = products.itemCount,
+                key = products.itemKey{it.id!!},
+                contentType = products.itemContentType { "contentType" }
+            ) { index ->
+                products[index]?.let {
+                    ProductItem(
+                        product = it,
+                        onProductClick = {
+                            productScreenViewModel.getProduct(it.toProductViewUiState(it))
                             navController.navigate(Screens.PRODUCT_SCREEN.name)
-                    },
-                    onAddToCartClick = {
-                        cartScreenViewModel.addProductToCart(item)
-                    }
-                )
+                        },
+                        onAddToCartClick = {
+                            cartScreenViewModel.addProductToCart(it)
+                        }
+                    )
+                }
 
             }
         }
@@ -464,7 +424,7 @@ fun CategoryItem(
 
 @Composable
 fun ProductItem(
-    product: Product,
+    product: ProductEntity,
     onProductClick:(product: Product)-> Unit,
     onAddToCartClick: (product: Product)->Unit,
 ) {
@@ -496,7 +456,7 @@ fun ProductItem(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .shadow(4.dp, shape = RoundedCornerShape(15.dp))
-            .clickable { onProductClick(product) }
+            .clickable { onProductClick(product.toDomainProduct()) }
 
     ) {
         Column(
@@ -553,7 +513,7 @@ fun ProductItem(
 
                     IconButton(
                         onClick = {
-                            onAddToCartClick(product)
+                            onAddToCartClick(product.toDomainProduct())
                             isAddedToCart = true
                             Toast.makeText(context, "Added to Cart!", Toast.LENGTH_SHORT).show()
                         },

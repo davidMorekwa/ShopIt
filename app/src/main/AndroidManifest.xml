@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopIt"
         tools:targetApi="31">
+        <meta-data
+            android:name="androidx.work.WorkManagerInitializer"
+            android:value="false" />
         <activity
             android:name=".ui.activities.AuthActivity"
             android:exported="false"

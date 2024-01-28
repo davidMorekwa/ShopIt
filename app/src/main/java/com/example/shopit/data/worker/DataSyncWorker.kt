@@ -17,8 +17,8 @@ class DataSyncWorker(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
         showSyncNotification(applicationContext, "Syncing has started")
-        val productList = remoteRepository.getInitialProducts()
-        database.upsertProducts(productList)
+//        val productList = remoteRepository.getInitialProducts()
+//        database.upsertProducts(productList)
 
         return Result.success()
 
