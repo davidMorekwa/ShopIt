@@ -24,9 +24,8 @@ import com.example.shopit.ui.screens.authscreens.AuthViewModel
 import com.example.shopit.ui.screens.authscreens.LoginScreen
 import com.example.shopit.ui.screens.authscreens.RegistrationScreen
 import com.example.shopit.ui.theme.ShopItTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

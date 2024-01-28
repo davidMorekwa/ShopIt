@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9538ab25-c32d-4cc7-b8b8-0bd01526673c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/model/CategoryEntity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/temp/TempScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/temp/TempViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ShopitApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ShopitApplication.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/di/AppContainer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/di/AppContainer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/di/AppModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/model/Product.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/model/Product.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/model/ProductEntity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/model/ProductEntity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/DefaultLocalDatabaseRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/DefaultLocalDatabaseRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/LocalDatabaseRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/LocalDatabaseRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/ProductEntity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/ProductsDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/ProductsDao.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/ShopitDatabase.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/local/ShopitDatabase.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/DefaultRemoteDatabaseRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/DefaultRemoteDatabaseRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/FirebasePagingSource.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/FirebasePagingSource.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/FirebaseRemoteMediator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/FirebaseRemoteMediator.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/RemoteDatabaseRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/repositories/remote/RemoteDatabaseRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/DataSyncWorker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/DataSyncWorker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/MyWorkerFactory.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/MyWorkerFactory.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/ProductTableSyncWorker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/ProductTableSyncWorker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/WorkerRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/data/worker/WorkerRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/naivigation/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/naivigation/NavGraph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/Screens.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/Screens.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/authscreens/RegistrationScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/authscreens/RegistrationScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/homescreen/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/homescreen/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/homescreen/HomeScreenViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/homescreen/HomeScreenViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/homescreen/HomeUiState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/homescreen/HomeUiState.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/searchscreen/SearchScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/searchscreen/SearchScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/searchscreen/SearchScreenViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/ui/screens/searchscreen/SearchScreenViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/shopit/viewModelProvider.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/shopit/viewModelProvider.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/shopit/fake/FakeDefaultLocalDatabaseRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/shopit/fake/FakeDefaultLocalDatabaseRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/shopit/viewmodel/HomeScreenViewModelTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/shopit/viewmodel/HomeScreenViewModelTest.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2bb5UigPQBBRSsaw54PDI8Zdu4t" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="compactDirectories" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "android.gradle.sync.needed": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "Merging featureBranch"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9538ab25-c32d-4cc7-b8b8-0bd01526673c" name="Changes" comment="" />
+      <created>1706470956144</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1706470956144</updated>
+    </task>
+    <servers />
+  </component>
+</project>

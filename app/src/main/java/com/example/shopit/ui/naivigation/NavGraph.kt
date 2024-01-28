@@ -25,6 +25,8 @@ import com.example.shopit.ui.screens.productscreen.ProductScreen
 import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
 import com.example.shopit.ui.screens.searchscreen.SearchScreen
 import com.example.shopit.ui.screens.searchscreen.SearchScreenViewModel
+import com.example.shopit.ui.screens.temp.TempViewModel
+import com.example.shopit.viewModelProvider
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,14 +39,36 @@ fun NavGraph(
     cartScreenViewModel: CartScreenViewModel,
 //    networkStatus: ConnectivityObserver.Status
 ) {
-    val productScreenViewModel: ProductScreenViewModel = viewModel()
-    val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel()
-    val searchScreenViewModel: SearchScreenViewModel = viewModel()
-    val authViewModel: AuthViewModel = viewModel()
+    val productScreenViewModel: ProductScreenViewModel =
+        viewModel(factory = viewModelProvider.factory)
+    val favoriteScreenViewModel: FavoriteScreenViewModel =
+        viewModel(factory = viewModelProvider.factory)
+    val authViewModel: AuthViewModel = viewModel(factory = viewModelProvider.factory)
+    val searchScreenViewModel: SearchScreenViewModel = viewModel(factory = viewModelProvider.factory)
+    val tempViewModel: TempViewModel = viewModel(factory = viewModelProvider.factory)
     NavHost(
         navController = navController,
         startDestination = Screens.HOME_SCREEN.name
     ) {
+        composable(
+            route = Screens.TEMP_SCREEN.name,
+            exitTransition = {
+                fadeOut()
+//                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+            },
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = TweenSpec(600, easing = EaseInOutQuart)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(animationSpec = TweenSpec(600, easing = EaseInOutQuart))
+            }
+        ){
+//            val data = tempViewModel.res.collectAsLazyPagingItems()
+//            TempScreen(data = d)
+        }
 
         composable(
             route = Screens.HOME_SCREEN.name,

@@ -5,7 +5,7 @@ import com.example.shopit.data.network.connectionObserver.ConnectivityObserver
 
 sealed interface HomeUiState {
     object Error : HomeUiState
-//    object Loading : HomeUiState
+    object Loading : HomeUiState
     data class Success(val products: List<Product>) : HomeUiState
 }
 
