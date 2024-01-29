@@ -50,6 +50,7 @@ import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
 import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
 import com.example.shopit.ui.theme.ShopItTheme
+import com.example.shopit.viewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
         } else {
             setContent {
 //                val networkStatus = networkConnectivityObserver.observe().collectAsState(initial = ConnectivityObserver.Status.Available).value
-                val homeScreenViewModel: HomeScreenViewModel = viewModel()
+                val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = viewModelProvider.factory)
                 var theme = homeScreenViewModel.toggleSwitchState.collectAsState()
                 ShopItTheme(
                     useDarkTheme = theme.value
@@ -100,7 +101,7 @@ fun ShopItApp(
     var isActive by remember {
         mutableStateOf(1)
     }
-    val cartScreenViewModel: CartScreenViewModel = viewModel()
+    val cartScreenViewModel: CartScreenViewModel = viewModel(factory = viewModelProvider.factory)
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {

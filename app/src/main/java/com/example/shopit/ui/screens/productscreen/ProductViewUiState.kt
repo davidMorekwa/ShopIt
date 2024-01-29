@@ -6,5 +6,7 @@ data class ProductViewUiState(
     val description: String? = "",
     val images: List<String>? = emptyList(),
     val price: Double? = 0.0,
-    val specifications: String? = ""
+    val specifications: String? = "",
+    val is_Favorite: Boolean = false,
+    val is_Cart: Boolean = false
 )

@@ -12,4 +12,8 @@ interface LocalDatabaseRepository {
     suspend fun clearProducts()
     suspend fun insertCategories(categories: List<CategoryEntity>): List<Long>
     fun getCategories(): PagingSource<Int, CategoryEntity>
+    suspend fun addToFavorites(id: String)
+    fun getFavorites(): PagingSource<Int, ProductEntity>
+    suspend fun deleteFavorite(productId: String)
+    suspend fun addToCart(productId: String)
 }

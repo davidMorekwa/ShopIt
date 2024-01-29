@@ -24,4 +24,12 @@ interface ProductsDao {
     suspend fun insertCategory(categories: List<CategoryEntity>): List<Long>
     @Query("SELECT * FROM table_categories")
     fun getCategories(): PagingSource<Int, CategoryEntity>
+    @Query("UPDATE table_products SET is_Favorite = true WHERE id = :id")
+    fun addFavorites(id: String)
+    @Query("SELECT * FROM table_products WHERE is_Favorite = true")
+    fun getFavorites(): PagingSource<Int, ProductEntity>
+    @Query("UPDATE table_products SET is_Favorite = false WHERE id = :productId")
+    fun removeFavorite(productId: String)
+    @Query("UPDATE table_products SET is_Cart = true WHERE id = :productId")
+    fun addTOCart(productId: String)
 }

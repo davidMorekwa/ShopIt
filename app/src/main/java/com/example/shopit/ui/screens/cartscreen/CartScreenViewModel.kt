@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.network.darajaApi.ApiServiceRepository
+import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import com.example.shopit.ui.screens.productscreen.ProductViewUiState
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-class CartScreenViewModel (private val remoteDatabaseRepository: RemoteDatabaseRepository, private val apiServiceRepository: ApiServiceRepository): ViewModel() {
+class CartScreenViewModel (
+    private val remoteDatabaseRepository: RemoteDatabaseRepository,
+    private val localDatabaseRepository: LocalDatabaseRepository,
+    private val apiServiceRepository: ApiServiceRepository
+): ViewModel() {
     private var _cartScreenUiState:MutableStateFlow<List<CartViewUiState>> = MutableStateFlow(
         listOf()
     )
@@ -26,6 +31,7 @@ class CartScreenViewModel (private val remoteDatabaseRepository: RemoteDatabaseR
         println("PRODUCT ${cartProduct.id} ADDED TO CART: Quantity = ${cartProduct.quantity}")
         viewModelScope.launch(Dispatchers.IO) {
             remoteDatabaseRepository.addProductToCart(cartProduct)
+            localDatabaseRepository.addToCart(product._id.toString())
         }
 
     }
