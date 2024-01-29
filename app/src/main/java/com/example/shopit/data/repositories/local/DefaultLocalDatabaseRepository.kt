@@ -37,4 +37,20 @@ class DefaultLocalDatabaseRepository(
     override fun getCategories(): PagingSource<Int, CategoryEntity> {
         return productsDao.getCategories()
     }
+
+    override suspend fun addToFavorites(id: String) {
+        productsDao.addFavorites(id)
+    }
+
+    override fun getFavorites(): PagingSource<Int, ProductEntity> {
+        return productsDao.getFavorites()
+    }
+
+    override suspend fun deleteFavorite(productId: String) {
+        productsDao.removeFavorite(productId)
+    }
+
+    override suspend fun addToCart(productId: String) {
+        productsDao.addTOCart(productId)
+    }
 }

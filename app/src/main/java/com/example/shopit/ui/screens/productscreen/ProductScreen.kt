@@ -3,6 +3,7 @@ package com.example.shopit.ui.screens.productscreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +27,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,12 +54,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.shopit.R
 import com.example.shopit.data.model.Product
 import com.example.shopit.ui.screens.cartscreen.CartScreenViewModel
 import com.example.shopit.ui.screens.homescreen.HomeScreenViewModel
@@ -119,8 +124,11 @@ fun ProductView(
     var productQuantity: String by remember {
         mutableStateOf("1")
     }
+    var isCart by rememberSaveable {
+        mutableStateOf(uiState.value.is_Cart)
+    }
     var isFavorite by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(uiState.value.is_Favorite)
     }
     var favoriteIcon by remember{
         mutableStateOf(Icons.Outlined.FavoriteBorder)
@@ -261,15 +269,26 @@ fun ProductView(
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = "$${uiState.value.price.toString()}",
+                text = "Ksh. ${uiState.value.price.toString()}",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
 
                 )
-            Button(onClick = {
-                onAddToCartClick(uiState.value)
-            }) {
-                Text(text = "Add to Cart")
+            if (isCart){
+                Icon(
+                    imageVector = Icons.Filled.ShoppingCart,
+                    contentDescription = "Already in cart",
+                    modifier = Modifier.clickable{
+                        isCart = false
+                    }
+                )
+            } else {
+                Button(onClick = {
+                    onAddToCartClick(uiState.value)
+                    isCart = true
+                }) {
+                    Text(text = "Add to Cart")
+                }
             }
         }
     }

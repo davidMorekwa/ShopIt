@@ -6,14 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.shopit.data.model.CategoryEntity
 import com.example.shopit.data.model.Product
 import com.example.shopit.data.repositories.local.LocalDatabaseRepository
 import com.example.shopit.data.repositories.remote.RemoteDatabaseRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 class SearchScreenViewModel(
@@ -26,9 +29,12 @@ class SearchScreenViewModel(
     var isSearch: Boolean by mutableStateOf(false)
 
     private var _categoryList: MutableStateFlow<List<CategoryEntity>> = MutableStateFlow(listOf())
-    val categoryList = categoryPager.flow.cachedIn(viewModelScope)
+    var categoryList: Flow<PagingData<CategoryEntity>> = flowOf()
 
     init {
+        viewModelScope.launch {
+            categoryList = categoryPager.flow.cachedIn(viewModelScope)
+        }
 //        viewModelScope.launch(Dispatchers.IO) {
 //            Log.d("CATEGORIES", "Getting categories")
 //            var categories = localDatabaseRepository.getCategories()

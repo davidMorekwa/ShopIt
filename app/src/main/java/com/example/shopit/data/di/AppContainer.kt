@@ -38,6 +38,7 @@ interface AppContainer{
 //    val firebasePager: Pager<String, Product>
     val roomPager: Pager<Int, ProductEntity>
     val categoryPager: Pager<Int, CategoryEntity>
+    val favoritesPager: Pager<Int, ProductEntity>
 }
 private const val TOKEN_PREFERENCE_NAME = "token_preference"
 
@@ -50,6 +51,7 @@ class DefaultAppContainer(
     private val moshi = Moshi.Builder()
         .addLast(KotlinJsonAdapterFactory())
         .build()
+    val z = auth.currentUser?.uid
     private val shopitDatabase: ShopitDatabase = ShopitDatabase.getDatabase(context)
 
     private val retrofit = Retrofit.Builder()
@@ -101,5 +103,10 @@ class DefaultAppContainer(
         get() = Pager(
             config = PagingConfig(5, initialLoadSize = 10),
             pagingSourceFactory = {localDatabaseRepository.getCategories()}
+        )
+    override val favoritesPager: Pager<Int, ProductEntity>
+        get() = Pager(
+            config = PagingConfig(pageSize = 5, initialLoadSize = 5),
+            pagingSourceFactory = {localDatabaseRepository.getFavorites()}
         )
 }

@@ -28,7 +28,10 @@ object viewModelProvider {
             TempViewModel()
         }
         initializer {
-            ProductScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
+            ProductScreenViewModel(
+                remoteDatabaseRepository = shopItApplication().container.remoteDatabaseRepository,
+                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
+            )
         }
         initializer {
             SearchScreenViewModel(
@@ -38,7 +41,12 @@ object viewModelProvider {
             )
         }
         initializer {
-            CartScreenViewModel(shopItApplication().container.remoteDatabaseRepository, shopItApplication().container.apiServiceRepository)
+            CartScreenViewModel(
+                remoteDatabaseRepository = shopItApplication().container.remoteDatabaseRepository,
+                apiServiceRepository = shopItApplication().container.apiServiceRepository,
+                localDatabaseRepository = shopItApplication().container.localDatabaseRepository
+            )
+
         }
         initializer {
             CheckoutViewModel(shopItApplication().container.remoteDatabaseRepository)
@@ -47,7 +55,10 @@ object viewModelProvider {
             AuthViewModel(shopItApplication().container.authRepository)
         }
         initializer {
-            FavoriteScreenViewModel(shopItApplication().container.remoteDatabaseRepository)
+            FavoriteScreenViewModel(
+                localDatabaseRepository = shopItApplication().container.localDatabaseRepository,
+                favoritesPager = shopItApplication().container.favoritesPager
+            )
         }
         initializer {
             SettingsScreenViewModel(shopItApplication().container.dataStoreInstance)

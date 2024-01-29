@@ -60,36 +60,6 @@ class HomeScreenViewModel(
         }
 
     }
-//    fun getInitialProducts() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try{
-////                var products = repository.getInitialProducts()
-////                println("PRODUCTS ${products.size}")
-//////                storeLocally(products)
-////                _homeUiState.value = HomeUiState.Success(products.shuffled())
-//
-//            } catch (e: IOException){
-//                Log.e("ERROR", e.message.toString())
-//                _homeUiState.value = HomeUiState.Error
-//            }
-//            _categoryList.value = getCategories(_homeUiState.value)
-//        }
-//    }
-//    fun filterProductsByCategory(category: String){
-//        viewModelScope.launch(Dispatchers.IO) {
-//            if(category == "All"){
-//                getInitialProducts()
-//            }
-//            _homeUiState.value = try{
-//                var products = repository.filterProductsByCategory(category)
-//                println("PRODUCTS IN CATEGORY $category: ${products.size}")
-//                HomeUiState.Success(products)
-//            } catch (e: IOException){
-//                Log.e("ERROR", e.message.toString())
-//                HomeUiState.Error
-//            }
-//        }
-//    }
 }
 
 private fun List<ProductEntity>.toProductList(): List<Product> {

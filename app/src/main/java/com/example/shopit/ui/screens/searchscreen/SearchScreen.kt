@@ -138,7 +138,7 @@ fun SearchScreen(
                         SearchProductItem(
                             product = item,
                             onProductSearchResultClick = {
-                                productScreenViewModel.getProduct(item.toProductViewUiState(item))
+                                productScreenViewModel.getProduct(item.toProductEntity())
                                 navController.navigate(Screens.PRODUCT_SCREEN.name)
                             }
                         )
@@ -183,20 +183,14 @@ fun SearchScreen(
                             searchScreenViewModel.search(searchValue)
                         }),
                         shape = RoundedCornerShape(15.dp),
-//                    modifier = Modifier
-//                        .width(320.dp)
                     )
                     Spacer(modifier = Modifier.height(35.dp))
-                    Text(
-                        text = "Recent Search results",
-                        fontWeight = FontWeight.ExtraBold
-                    )
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                     ){
                         items(
                             count = categories.itemCount,
-                            key = categories.itemKey{it.name!!},
+                            key = categories.itemKey{it.name},
                             contentType = categories.itemContentType { "contentType" }
                         ){ index ->
                             categories.get(index)

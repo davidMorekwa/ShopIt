@@ -250,14 +250,6 @@ fun HomeScreen(
                             .fillMaxSize()
                             .padding(top = 45.dp, bottom = 50.dp)
                     ) {
-//                        PagedDataScreen(
-//                            products = pagedProducts,
-//                            viewModel = homeScreenViewModel,
-//                            navController = navController,
-//                            cartScreenViewModel = cartScreenViewModel,
-//                            productScreenViewModel = productScreenViewModel,
-//                            categories = categories.value
-//                        )
                         if (uiState.loadState.refresh == LoadState.Loading){
                             LoadingScreen()
                         } else {
@@ -270,43 +262,9 @@ fun HomeScreen(
                                 productScreenViewModel = productScreenViewModel,
                             )
                         }
-//                        when (uiState.loadState) {
-//                            HomeUiState.Error -> ErrorScreen(
-//                                onRetryClicked = { homeScreenViewModel.getInitialProducts() }
-//                            )
-//                            LoadState.Loading -> LoadingScreen()
-//                            is HomeUiState.Success -> {
-//                                if ((uiState.value as HomeUiState.Success).products.isNotEmpty()) {
-//                                    SuccessScreen(
-//                                        products = (uiState.value as HomeUiState.Success).products,
-//                                        viewModel = homeScreenViewModel,
-//                                        navController = navController,
-//                                        cartScreenViewModel = cartScreenViewModel,
-//                                        productScreenViewModel = productScreenViewModel,
-//                                        categories = categories.value
-//                                    )
-//                                } else {
-//                                    Box(
-//                                        modifier = Modifier.fillMaxSize(),
-//                                        contentAlignment = Alignment.Center
-//                                    ) {
-//                                        Column(
-//                                            horizontalAlignment = Alignment.CenterHorizontally
-//                                        ) {
-//                                            CircularProgressIndicator(
-//                                                color = MaterialTheme.colorScheme.tertiary
-//                                            )
-//                                            Text(text = "Loading...")
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-
                     }
                 }
                 else if (selectedItem.value == 3) {
-                    favoriteScreenViewModel.getFavoriteProducts()
                     FavoritesScreen(
                         favoriteScreenViewModel = favoriteScreenViewModel,
                         navController = navController,
@@ -380,15 +338,15 @@ fun SuccessScreen(
                 key = products.itemKey{it.id!!},
                 contentType = products.itemContentType { "contentType" }
             ) { index ->
-                products[index]?.let {
+                products[index]?.let { it ->
                     ProductItem(
                         product = it,
                         onProductClick = {
-                            productScreenViewModel.getProduct(it.toProductViewUiState(it))
+                            productScreenViewModel.getProduct(it)
                             navController.navigate(Screens.PRODUCT_SCREEN.name)
                         },
                         onAddToCartClick = {
-                            cartScreenViewModel.addProductToCart(it)
+                            cartScreenViewModel.addProductToCart(it.toDomainProduct())
                         }
                     )
                 }
@@ -420,8 +378,8 @@ fun CategoryItem(
 @Composable
 fun ProductItem(
     product: ProductEntity,
-    onProductClick:(product: Product)-> Unit,
-    onAddToCartClick: (product: Product)->Unit,
+    onProductClick:(product: ProductEntity)-> Unit,
+    onAddToCartClick: (product: ProductEntity)->Unit,
 ) {
     var elevation by remember {
         mutableStateOf(0.dp)
@@ -435,7 +393,7 @@ fun ProductItem(
         elevation = 1.dp
     }
     var isAddedToCart by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(product.is_Cart)
     }
     var cartIcon = if (isAddedToCart){
         Icons.Filled.ShoppingCart
@@ -451,7 +409,7 @@ fun ProductItem(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .shadow(4.dp, shape = RoundedCornerShape(15.dp))
-            .clickable { onProductClick(product.toDomainProduct()) }
+            .clickable { onProductClick(product) }
 
     ) {
         Column(
@@ -508,7 +466,7 @@ fun ProductItem(
 
                     IconButton(
                         onClick = {
-                            onAddToCartClick(product.toDomainProduct())
+                            onAddToCartClick(product)
                             isAddedToCart = true
                             Toast.makeText(context, "Added to Cart!", Toast.LENGTH_SHORT).show()
                         },

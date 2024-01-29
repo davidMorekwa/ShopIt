@@ -40,10 +40,10 @@ class FirebaseRemoteMediator(
             Log.d(TAG, "Products ${products.size}")
             Log.d(TAG, "Adding data to room")
             shopitDatabase.withTransaction {
-                if (loadType == LoadType.REFRESH) {
-                    Log.d(TAG, "Clearing Database")
-                    localDatabaseRepository.clearProducts()
-                }
+//                if (loadType == LoadType.REFRESH) {
+//                    Log.d(TAG, "Clearing Database")
+//                    localDatabaseRepository.clearProducts()
+//                }
                 Log.d(TAG, "Insert beers to room")
                 val categories = products.map { it-> CategoryEntity(name = it.primary_category!!, image = it.main_image!!) }
                 localDatabaseRepository.insertProducts(products.map { it.toProductEntity() })

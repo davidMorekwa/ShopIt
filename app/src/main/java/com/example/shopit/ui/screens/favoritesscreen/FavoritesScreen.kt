@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.example.shopit.ui.screens.Screens
 import com.example.shopit.ui.screens.productscreen.ProductScreenViewModel
@@ -47,7 +48,7 @@ fun FavoritesScreen(
     productScreenViewModel: ProductScreenViewModel,
     navController: NavController,
 ) {
-    val uiState = favoriteScreenViewModel.favoriteProducts.collectAsState()
+    val uiState = favoriteScreenViewModel.favoriteProducts.collectAsLazyPagingItems()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -75,24 +76,31 @@ fun FavoritesScreen(
             )
         },
     ) {
-        if(uiState.value.isNotEmpty()) {
+        if(uiState.itemCount > 0) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .padding(top = 40.dp, start = 8.dp, end = 8.dp, bottom = 50.dp)
                     .fillMaxHeight()
             ) {
-                items(uiState.value){ item: ProductViewUiState ->
-                    FavoriteProductItem(
-                        product = item,
-                        onRemoveFromFavorites = {
-                            item._id?.let { favoriteScreenViewModel.removeFromFavorites(it) }
-                        },
-                        onProductClick = {
-                            productScreenViewModel.getProduct(item)
-                            navController.navigate(Screens.PRODUCT_SCREEN.name)
-                        }
-                    )
+                items(
+                    count = uiState.itemCount,
+                    key = uiState.itemKey { it.id },
+                    contentType = uiState.itemContentType { "contentType" }
+                ){ index ->
+                    var product = uiState[index]
+                    product?.let { it ->
+                        FavoriteProductItem(
+                            product = it.toProductViewUiState(it),
+                            onRemoveFromFavorites = {
+                                favoriteScreenViewModel.removeFromFavorites(product.id) 
+                            },
+                            onProductClick = {
+                                productScreenViewModel.getProduct(it)
+                                navController.navigate(Screens.PRODUCT_SCREEN.name)
+                            }
+                        )
+                    }
                 }
             }
         } else {

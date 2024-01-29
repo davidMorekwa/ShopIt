@@ -9,7 +9,7 @@ import com.example.shopit.data.model.ProductEntity
 
 @Database(
     entities = [ProductEntity::class, CategoryEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class ShopitDatabase: RoomDatabase() {
