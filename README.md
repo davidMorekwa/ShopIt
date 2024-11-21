@@ -6,6 +6,7 @@ The app integrates Safaricom's Mpesa Express api to faciliate the payment of goo
 
 
 ## Table of Contents
+- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
@@ -13,7 +14,9 @@ The app integrates Safaricom's Mpesa Express api to faciliate the payment of goo
 - [Usage](#usage)
 - [Contributing](#contributing)
 
+##Screenshots
 
+https://github.com/user-attachments/assets/563892c9-b58c-4873-9c7b-8fc471fee9e3
 
 ## Getting Started
 
